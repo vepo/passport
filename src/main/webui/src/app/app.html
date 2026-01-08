@@ -20,43 +20,43 @@
       <mat-icon fontIcon="assignment"></mat-icon><span i18n>Novo</span>
     </button>
   </div>
-  }
+}-->
   <div class="grow-space"></div>
   @if (isAuthenticated()) {
-  <div class="user-menu">
+  <!--div class="user-menu">
     <app-notification></app-notification>
-  </div>
+  </div-->
   <div class="user-menu">
     <button matButton [matMenuTriggerFor]="menu">
-      <mat-icon fontIcon="menu"></mat-icon><span i18n>Menu</span>
+      <mat-icon fontIcon="menu"></mat-icon><span>Menu</span>
     </button>
     <mat-menu #menu="matMenu" class="menu-panel">
       <button mat-menu-item [routerLink]="'/account/settings'">
-        <mat-icon fontIcon="person"></mat-icon><span i18n>Conta</span>
+        <mat-icon fontIcon="person"></mat-icon><span>Conta</span>
       </button>
       <button mat-menu-item *role="'admin'" [routerLink]="'/users'">
-        <mat-icon fontIcon="group"></mat-icon><span i18n>Usuários</span>
+        <mat-icon fontIcon="group"></mat-icon><span>Usuários</span>
       </button>
       <div class="divider"  *role="'project-manager'"></div>
       <button mat-menu-item *role="'project-manager'" [routerLink]="'/workflows'">
-        <mat-icon fontIcon="handyman"></mat-icon><span i18n>Processos</span>
+        <mat-icon fontIcon="handyman"></mat-icon><span>Processos</span>
       </button>
       <button mat-menu-item *role="'project-manager'" [routerLink]="'/projects'">
-        <mat-icon fontIcon="work"></mat-icon><span i18n>Projetos</span>
+        <mat-icon fontIcon="work"></mat-icon><span>Projetos</span>
       </button>
       <div class="divider"></div>
       <button mat-menu-item (click)="logout()">
-        <mat-icon fontIcon="logout"></mat-icon><span i18n>Sair</span>
+        <mat-icon fontIcon="logout"></mat-icon><span>Sair</span>
       </button>
     </mat-menu>    
   </div>
-  } @else { -->
+  } @else {
   <div class="user-menu">
     <button matButton [routerLink]="'/login'">
       <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="login"></mat-icon> <span>Acessar</span>
     </button>
   </div>
-<!--  } -->
+  }
 </header>
 <main class="container">
   <router-outlet />

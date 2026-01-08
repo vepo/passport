@@ -4,6 +4,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import dev.vepo.passport.user.Role;
 import dev.vepo.passport.user.UserRepository;
 import io.smallrye.jwt.build.Jwt;
@@ -25,14 +27,17 @@ import jakarta.ws.rs.core.SecurityContext;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthenticationEndpoint {
-    private PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final String issuer;
 
     @Inject
     public AuthenticationEndpoint(PasswordEncoder passwordEncoder,
-                                  UserRepository userRepository) {
+                                  UserRepository userRepository,
+                                  @ConfigProperty(name = "mp.jwt.verify.issuer") String issuer) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.issuer = issuer;
     }
 
     @POST
@@ -42,7 +47,7 @@ public class AuthenticationEndpoint {
                                   .filter(u -> passwordEncoder.matches(request.password(), u.getEncodedPassword()))
                                   .map(user -> {
                                       Instant now = Instant.now();
-                                      return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
+                                      return new LoginResponse(Jwt.issuer(issuer)
                                                                   .upn(user.getUsername())
                                                                   .claim("username", user.getUsername())
                                                                   .claim("id", user.getId())
