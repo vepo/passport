@@ -1,0 +1,518 @@
+// ============================================
+// COMPONENTES DE FORMULÁRIOS - PASSPORT APP
+// Estilos para formulários e controles
+// ============================================
+
+// IMPORTAR VARIÁVEIS DO ARQUIVO PRINCIPAL
+// @import 'styles.less'; // Descomente se necessário
+
+// FORMULÁRIO PRINCIPAL
+.main.centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: @espacamento-xxl;
+    background-color: @branco;
+    border-radius: @border-radius;
+    box-shadow: @shadow-md;
+    border: 1px solid @cinza-medio;
+
+    @media (max-width: 768px) {
+        padding: @espacamento-xl;
+        max-width: 90%;
+        margin: @espacamento-lg auto;
+    }
+
+    @media (max-width: 480px) {
+        padding: @espacamento-lg;
+        box-shadow: none;
+        border: none;
+        background-color: transparent;
+    }
+}
+
+// CABEÇALHO DO FORMULÁRIO
+.form-header {
+    text-align: center;
+    margin-bottom: @espacamento-xl;
+    width: 100%;
+
+    h2 {
+        color: @azul-primario;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: @espacamento-sm;
+        line-height: 1.2;
+
+        @media (max-width: 768px) {
+            font-size: 24px;
+        }
+    }
+
+    p {
+        color: @cinza-escuro;
+        font-size: @fonte-tamanho-base;
+        font-weight: 400;
+        margin: 0;
+    }
+}
+
+// FORMULÁRIO
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: @espacamento-lg;
+}
+
+// CAMPOS DO FORMULÁRIO (MATERIAL)
+.form-field {
+    width: 100%;
+
+    // Sobrescrevendo estilos do Material
+    ::ng-deep {
+        .mat-form-field-wrapper {
+            padding-bottom: 0;
+        }
+
+        .mat-form-field-flex {
+            background-color: @branco;
+            border: 2px solid @cinza-medio;
+            border-radius: @border-radius;
+            padding: 0 @espacamento-md;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+            &:hover {
+                border-color: @azul-terciario;
+            }
+        }
+
+        .mat-form-field-underline {
+            display: none;
+        }
+
+        .mat-form-field-subscript-wrapper {
+            display: none;
+        }
+
+        // Foco no campo
+        .mat-form-field-flex.mat-focused {
+            border-color: @azul-secundario;
+            box-shadow: 0 0 0 3px fade(@azul-secundario, 10%);
+        }
+
+        // Campo com erro
+        .mat-form-field-flex.mat-form-field-invalid {
+            border-color: #DC2626;
+
+            &.mat-focused {
+                box-shadow: 0 0 0 3px fade(#DC2626, 10%);
+            }
+        }
+
+        // Label
+        .mat-form-field-label {
+            color: @cinza-escuro;
+            font-weight: 500;
+
+            &.mat-form-field-empty {
+                color: @cinza-escuro;
+            }
+        }
+
+        .mat-focused .mat-form-field-label {
+            color: @azul-secundario;
+        }
+
+        // Input
+        .mat-input-element {
+            color: @preto;
+            font-size: @fonte-tamanho-base;
+            padding: @espacamento-md 0;
+            height: auto;
+            line-height: 1.5;
+
+            &::placeholder {
+                color: @cinza-escuro;
+                opacity: 0.7;
+            }
+        }
+
+        // Suffix (ícones)
+        .mat-icon-button {
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+
+            .mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+                color: @cinza-escuro;
+                transition: color 0.2s ease;
+
+                &:hover {
+                    color: @azul-secundario;
+                }
+            }
+        }
+
+        // Hint/error
+        .mat-hint,
+        .mat-error {
+            font-size: @fonte-tamanho-pequeno;
+            margin-top: @espacamento-xs;
+        }
+
+        .mat-error {
+            color: #DC2626;
+        }
+    }
+}
+
+// MENSAGEM DE ERRO
+.error {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    padding: @espacamento-md;
+    border-radius: @border-radius-sm;
+    border-left: 4px solid #DC2626;
+    font-size: @fonte-tamanho-base;
+    font-weight: 500;
+    margin: @espacamento-sm 0;
+    animation: fadeIn 0.3s ease;
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+// BOTÕES DO FORMULÁRIO
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: @espacamento-sm;
+    width: 100%;
+    background-color: @azul-secundario;
+    color: @branco;
+    border: none;
+    padding: @espacamento-md @espacamento-xl;
+    border-radius: @border-radius;
+    font-size: @fonte-tamanho-base;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: @espacamento-sm;
+
+    &:hover:not(:disabled) {
+        background-color: @azul-hover;
+        color: @branco;
+        box-shadow: @shadow-md;
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background-color: @cinza-medio;
+        color: @cinza-escuro;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    span {
+        font-size: @fonte-tamanho-base;
+    }
+
+    // Botão secundário
+    &.btn-secondary {
+        background-color: transparent;
+        color: @azul-secundario;
+        border: 2px solid @azul-secundario;
+
+        &:hover:not(:disabled) {
+            background-color: @azul-claro;
+            color: @azul-hover;
+            border-color: @azul-hover;
+        }
+    }
+
+    // Botão outline
+    &.btn-outline {
+        background-color: transparent;
+        color: @cinza-escuro;
+        border: 2px solid @cinza-medio;
+
+        &:hover:not(:disabled) {
+            background-color: @cinza-claro;
+            border-color: @cinza-escuro;
+            color: @preto;
+        }
+    }
+}
+
+// GRUPO DE BOTÕES
+.btn-group {
+    display: flex;
+    gap: @espacamento-md;
+    width: 100%;
+
+    .btn {
+        flex: 1;
+    }
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+    }
+}
+
+// LINKS ADICIONAIS NO FORMULÁRIO
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: @espacamento-md;
+    font-size: @fonte-tamanho-pequeno;
+
+    a {
+        color: @azul-secundario;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: @azul-hover;
+            text-decoration: underline;
+        }
+    }
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+        gap: @espacamento-sm;
+        align-items: flex-start;
+    }
+}
+
+// CHECKBOXES E RADIOS PERSONALIZADOS
+.custom-checkbox,
+.custom-radio {
+    display: flex;
+    align-items: center;
+    gap: @espacamento-sm;
+    margin: @espacamento-md 0;
+    cursor: pointer;
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: @azul-secundario;
+        cursor: pointer;
+    }
+
+    label {
+        color: @cinza-escuro;
+        font-size: @fonte-tamanho-base;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    &:hover {
+        label {
+            color: @preto;
+        }
+    }
+}
+
+// SELECT PERSONALIZADO
+.custom-select {
+    width: 100%;
+    position: relative;
+
+    select {
+        width: 100%;
+        padding: @espacamento-md;
+        border: 2px solid @cinza-medio;
+        border-radius: @border-radius;
+        background-color: @branco;
+        color: @preto;
+        font-size: @fonte-tamanho-base;
+        font-family: @fonte-principal;
+        cursor: pointer;
+        appearance: none;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: @azul-terciario;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: @azul-secundario;
+            box-shadow: 0 0 0 3px fade(@azul-secundario, 10%);
+        }
+
+        &:disabled {
+            background-color: @cinza-claro;
+            color: @cinza-escuro;
+            cursor: not-allowed;
+        }
+    }
+
+    &::after {
+        content: "▼";
+        position: absolute;
+        right: @espacamento-md;
+        top: 50%;
+        transform: translateY(-50%);
+        color: @cinza-escuro;
+        pointer-events: none;
+        font-size: 12px;
+    }
+}
+
+// TEXTAREA PERSONALIZADO
+.custom-textarea {
+    width: 100%;
+
+    textarea {
+        width: 100%;
+        padding: @espacamento-md;
+        border: 2px solid @cinza-medio;
+        border-radius: @border-radius;
+        background-color: @branco;
+        color: @preto;
+        font-size: @fonte-tamanho-base;
+        font-family: @fonte-principal;
+        resize: vertical;
+        min-height: 120px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: @azul-terciario;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: @azul-secundario;
+            box-shadow: 0 0 0 3px fade(@azul-secundario, 10%);
+        }
+
+        &::placeholder {
+            color: @cinza-escuro;
+            opacity: 0.7;
+        }
+    }
+}
+
+// GRUPO DE CAMPOS
+.field-group {
+    display: flex;
+    gap: @espacamento-md;
+    width: 100%;
+
+    .form-field {
+        flex: 1;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: @espacamento-lg;
+    }
+}
+
+// VALIDAÇÃO
+.validation-message {
+    font-size: @fonte-tamanho-pequeno;
+    margin-top: @espacamento-xs;
+    display: flex;
+    align-items: center;
+    gap: @espacamento-xs;
+
+    &.valid {
+        color: #059669;
+    }
+
+    &.invalid {
+        color: #DC2626;
+    }
+
+    mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+}
+
+// LOADING STATE
+.loading {
+    position: relative;
+    opacity: 0.7;
+    pointer-events: none;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 24px;
+        height: 24px;
+        border: 3px solid @cinza-medio;
+        border-top-color: @azul-secundario;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+}
+
+// FORMULÁRIO EM GRID
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: @espacamento-lg;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// MENSAGEM DE SUCESSO
+.success-message {
+    background-color: #F0FDF4;
+    color: #059669;
+    padding: @espacamento-md;
+    border-radius: @border-radius-sm;
+    border-left: 4px solid #059669;
+    font-size: @fonte-tamanho-base;
+    font-weight: 500;
+    margin: @espacamento-lg 0;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}

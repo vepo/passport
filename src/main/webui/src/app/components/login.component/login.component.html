@@ -1,0 +1,27 @@
+<div class="main centered">
+    <div class="form-header">
+        <h2>Passaport - Entrar</h2>
+        <p>Sistema de gerenciamento de acesso</p>
+    </div>
+    <form (ngSubmit)="login()">
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>E-mail</mat-label>
+            <input matInput [(ngModel)]="email" name="email" required />
+        </mat-form-field>
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Password</mat-label>
+            <input matInput name="password" [(ngModel)]="password" [type]="hide() ? 'password' : 'text'" required />
+            <mat-icon matSuffix (click)="clickEvent($event)">
+                {{hide() ? 'visibility_off' : 'visibility'}}
+            </mat-icon>
+        </mat-form-field>
+        @if (error) {
+            <div class="error">{{error}}</div>
+        }
+        <div>
+            <button class="btn" matButton type="submit">
+                <mat-icon fontIcon="login"></mat-icon><span>Entrar</span>
+            </button>
+        </div>
+    </form>
+</div>

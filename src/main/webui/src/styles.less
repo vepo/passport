@@ -1,0 +1,281 @@
+// ============================================
+// GUIA DE ESTILO PROFISSIONAL - PASSPORT APP
+// Paleta Corporativa em Tons de Azul
+// ============================================
+
+// PALETA DE CORES - TONS DE AZUL CHAPADO
+@azul-primario: #1E3A8A;     // Azul marinho escuro
+@azul-secundario: #2563EB;   // Azul corporativo
+@azul-terciario: #3B82F6;    // Azul médio
+@azul-claro: #DBEAFE;        // Azul muito claro
+@azul-hover: #1D4ED8;        // Azul para hover states
+
+// CORES NEUTRAS
+@branco: #FFFFFF;
+@cinza-claro: #F8FAFC;
+@cinza-medio: #E2E8F0;
+@cinza-escuro: #64748B;
+@preto: #0F172A;
+
+// TIPOGRAFIA
+@fonte-principal: 'Inter', 'Segoe UI', system-ui, sans-serif;
+@fonte-tamanho-base: 16px;
+@fonte-tamanho-pequeno: 14px;
+@fonte-tamanho-grande: 18px;
+
+// ESPAÇAMENTOS
+@espacamento-xs: 4px;
+@espacamento-sm: 8px;
+@espacamento-md: 16px;
+@espacamento-lg: 24px;
+@espacamento-xl: 32px;
+@espacamento-xxl: 48px;
+
+// BORDAS E SOMBRAS
+@border-radius: 8px;
+@border-radius-sm: 4px;
+@shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+@shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+// LAYOUT
+@container-max-width: 1200px;
+@container-padding: @espacamento-xl;
+
+@import 'forms.less';
+
+// RESET E ESTILOS GLOBAIS
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: @fonte-principal;
+    font-size: @fonte-tamanho-base;
+    line-height: 1.5;
+    color: @preto;
+    background-color: @cinza-claro;
+}
+
+// LAYOUT PRINCIPAL
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+// HEADER
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: @espacamento-md @espacamento-xl;
+    background-color: @azul-primario;
+    color: @branco;
+    box-shadow: @shadow-md;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    nav {
+        a {
+            color: @branco;
+            text-decoration: none;
+            font-weight: 500;
+            padding: @espacamento-sm @espacamento-md;
+            border-radius: @border-radius-sm;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: fade(@branco, 10%);
+            }
+
+            &.active {
+                background-color: @azul-secundario;
+            }
+        }
+    }
+
+    .user-menu {
+        button {
+            display: flex;
+            align-items: center;
+            gap: @espacamento-sm;
+            background-color: @azul-secundario;
+            color: @branco;
+            border: none;
+            padding: @espacamento-sm @espacamento-lg;
+            border-radius: @border-radius;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background-color: @azul-hover;
+                transform: translateY(-1px);
+                box-shadow: @shadow-sm;
+            }
+
+            &:active {
+                transform: translateY(0);
+            }
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+
+            span {
+                font-size: @fonte-tamanho-base;
+            }
+        }
+    }
+}
+
+// CONTAINER PRINCIPAL
+.container {
+    flex: 1 0 auto;
+    width: 100%;
+    max-width: @container-max-width;
+    margin: 0 auto;
+    padding: @espacamento-xxl @container-padding;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 140px); // Altura total menos header e footer
+
+    // Garante que o conteúdo interno expanda
+    > * {
+        width: 100%;
+    }
+}
+
+// FOOTER
+.main-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: @espacamento-md;
+    padding: @espacamento-lg @espacamento-xl;
+    background-color: @azul-primario;
+    color: @branco;
+    margin-top: auto;
+
+    div {
+        display: flex;
+        align-items: center;
+
+        a {
+            color: @azul-claro;
+            text-decoration: none;
+            transition: color 0.2s ease;
+
+            &:hover {
+                color: @branco;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .grow-space {
+        flex-grow: 1;
+    }
+
+    // Responsividade para telas pequenas
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+        gap: @espacamento-sm;
+
+        .grow-space {
+            display: none;
+        }
+    }
+}
+
+// COMPONENTES ADICIONAIS
+// Links gerais
+a {
+    color: @azul-secundario;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+        text-decoration: underline;
+        color: @azul-hover;
+    }
+}
+
+// Botões (estilos adicionais)
+button {
+    font-family: @fonte-principal;
+    font-size: @fonte-tamanho-base;
+    
+    &.primary {
+        background-color: @azul-secundario;
+        color: @branco;
+        
+        &:hover {
+            background-color: @azul-hover;
+        }
+    }
+    
+    &.secondary {
+        background-color: transparent;
+        color: @azul-secundario;
+        border: 2px solid @azul-secundario;
+        
+        &:hover {
+            background-color: @azul-claro;
+        }
+    }
+}
+
+// Cards e containers
+.card {
+    background: @branco;
+    border-radius: @border-radius;
+    padding: @espacamento-xl;
+    box-shadow: @shadow-sm;
+    border: 1px solid @cinza-medio;
+}
+
+// Responsividade
+@media (max-width: 768px) {
+    .container {
+        padding: @espacamento-lg @espacamento-md;
+        min-height: calc(100vh - 160px);
+    }
+
+    .main-header {
+        padding: @espacamento-md;
+        
+        .user-menu button span {
+            display: none; // Esconde texto, mantém ícone
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .main-footer {
+        font-size: @fonte-tamanho-pequeno;
+        padding: @espacamento-md;
+    }
+    
+    .container {
+        padding: @espacamento-md @espacamento-sm;
+    }
+}
+
+// Utilitários
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.mt-1 { margin-top: @espacamento-sm; }
+.mt-2 { margin-top: @espacamento-md; }
+.mt-3 { margin-top: @espacamento-lg; }
+.mb-1 { margin-bottom: @espacamento-sm; }
+.mb-2 { margin-bottom: @espacamento-md; }
+.mb-3 { margin-bottom: @espacamento-lg; }
