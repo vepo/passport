@@ -36,7 +36,6 @@ public class CreateUserEndpoint {
     @POST
     @Transactional
     @ResponseStatus(201)
-    @RolesAllowed(Role.ADMIN_ROLE)
     public UserResponse create(@Valid CreateUserRequest request) {
         return UserResponse.load(this.userRepository.save(new User(request.username(),
                                                                    request.name(),
