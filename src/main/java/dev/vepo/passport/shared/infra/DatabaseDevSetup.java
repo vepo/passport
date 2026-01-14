@@ -1,4 +1,4 @@
-package dev.vepo.passport.infra;
+package dev.vepo.passport.shared.infra;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@IfBuildProfile(anyOf = { "dev", "test" })
+@IfBuildProfile(anyOf = { "dev" })
 public class DatabaseDevSetup {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
     private EntityManager entityManager;

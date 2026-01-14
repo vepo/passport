@@ -1,4 +1,4 @@
-package dev.vepo.passport.infra;
+package dev.vepo.passport.shared.infra;
 
 import java.time.Instant;
 import java.time.ZoneId;

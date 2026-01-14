@@ -10,11 +10,11 @@ public record AuthResponse(long id, String username, String name, String email, 
 
     public static AuthResponse load(User user) {
         return new AuthResponse(user.getId(),
-                user.getUsername(),
-                user.getName(),
-                user.getEmail(),
-                user.getRoles().stream()
-                        .map(Role::role)
-                        .collect(Collectors.toSet()));
+                                user.getUsername(),
+                                user.getName(),
+                                user.getEmail(),
+                                user.getRoles().stream()
+                                    .map(Role::role)
+                                    .collect(Collectors.toSet()));
     }
 }

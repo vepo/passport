@@ -1,4 +1,5 @@
-package dev.vepo.passport.infra;
+package dev.vepo.passport.shared.infra;
+
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;

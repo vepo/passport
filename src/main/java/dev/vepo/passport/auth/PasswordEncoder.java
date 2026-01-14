@@ -11,7 +11,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import dev.vepo.passport.infra.PassportException;
+import dev.vepo.passport.shared.infra.PassportException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
