@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperação de Senha - Backoffice Passport</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #0F172A;
+            background-color: #F8FAFC;
+            padding: 20px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header */
+        .email-header {
+            background-color: #1E3A8A;
+            color: #FFFFFF;
+            padding: 24px 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .email-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .email-header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .security-badge {
+            position: absolute;
+            top: 20px;
+            right: 32px;
+            background-color: #FEF2F2;
+            color: #DC2626;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Content */
+        .email-content {
+            padding: 32px;
+        }
+
+        .recovery-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .recovery-icon {
+            font-size: 48px;
+            color: #2563EB;
+            margin-bottom: 16px;
+        }
+
+        .recovery-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin-bottom: 12px;
+        }
+
+        .recovery-section p {
+            color: #64748B;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        /* Reset Token Section */
+        .reset-token-section {
+            background-color: #F0FDF4;
+            border-radius: 6px;
+            padding: 24px;
+            margin: 24px 0;
+            border: 1px solid #BBF7D0;
+            text-align: center;
+        }
+
+        .reset-token-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #065F46;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .token-container {
+            margin: 20px 0;
+        }
+
+        .token-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .token-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #065F46;
+            font-family: 'Courier New', monospace;
+            padding: 16px;
+            background-color: #FFFFFF;
+            border-radius: 6px;
+            display: inline-block;
+            border: 2px dashed #059669;
+            letter-spacing: 2px;
+        }
+
+        .copy-button {
+            display: inline-block;
+            background-color: #059669;
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #047857;
+        }
+
+        /* Alternative Reset Link */
+        .reset-link-section {
+            background-color: #DBEAFE;
+            border-radius: 6px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .reset-link-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin-bottom: 16px;
+        }
+
+        .reset-button {
+            display: inline-block;
+            background-color: #2563EB;
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 14px 32px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin: 12px 0;
+        }
+
+        .reset-button:hover {
+            background-color: #1D4ED8;
+        }
+
+        .reset-url {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #2563EB;
+            background-color: #FFFFFF;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+            border: 1px solid #E2E8F0;
+            word-break: break-all;
+        }
+
+        /* User Info */
+        .user-info-card {
+            background-color: #F8FAFC;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 24px 0;
+            border: 1px solid #E2E8F0;
+        }
+
+        .user-info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-item {
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #0F172A;
+        }
+
+        /* Expiration Warning */
+        .expiration-warning {
+            background-color: #FEF2F2;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 24px 0;
+            border-left: 4px solid #DC2626;
+        }
+
+        .expiration-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #991B1B;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expiration-timer {
+            font-size: 18px;
+            font-weight: 700;
+            color: #DC2626;
+            text-align: center;
+            margin: 16px 0;
+            padding: 12px;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            border: 2px solid #FCA5A5;
+        }
+
+        /* Security Information */
+        .security-info {
+            background-color: #FEFCE8;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 24px 0;
+            border-left: 4px solid #CA8A04;
+        }
+
+        .security-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #854D0E;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-list {
+            margin-left: 20px;
+            color: #854D0E;
+        }
+
+        .security-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Footer */
+        .email-footer {
+            background-color: #F8FAFC;
+            padding: 24px 32px;
+            text-align: center;
+            border-top: 1px solid #E2E8F0;
+            color: #64748B;
+            font-size: 12px;
+        }
+
+        .footer-links {
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: #2563EB;
+            text-decoration: none;
+            margin: 0 12px;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            font-size: 11px;
+            color: #94A3B8;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .email-content {
+                padding: 24px 16px;
+            }
+
+            .user-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .token-value {
+                font-size: 22px;
+                padding: 12px;
+            }
+
+            .reset-button,
+            .copy-button {
+                width: 100%;
+                padding: 16px;
+            }
+
+            .email-header,
+            .email-footer {
+                padding: 20px 16px;
+            }
+
+            .security-badge {
+                position: static;
+                margin-top: 12px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>Backoffice Passport</h1>
+            <p>Recuperação de Senha</p>
+            <div class="security-badge">
+                <span>🔒</span>
+                SEGURANÇA
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="email-content">
+            <!-- Recovery Section -->
+            <div class="recovery-section">
+                <div class="recovery-icon">🔐</div>
+                <h2>Olá, {event.name}!</h2>
+                <p>Recebemos uma solicitação para redefinir sua senha do Backoffice Passport.</p>
+                <p>Utilize as informações abaixo para concluir o processo de recuperação.</p>
+            </div>
+
+            <!-- Reset Token -->
+            <div class="reset-token-section">
+                <div class="reset-token-title">
+                    <span>🔑</span>
+                    Senha de Recuperação
+                </div>
+                <div class="token-container">
+                    <span class="token-label">Senha temporária</span>
+                    <div class="token-value">{event.password}</div>
+                </div>
+                <button class="copy-button" onclick="copyToClipboard()">
+                    📋 Copiar Senha
+                </button>
+                <p style="color: #64748B; font-size: 14px; margin-top: 16px;">
+                    Use essa senha para gerar uma nova senha de acesso.
+                </p>
+            </div>
+
+            <!-- Alternative: Reset Link -->
+            <div class="reset-link-section">
+                <div class="reset-link-title">
+                    <span>🔗</span>
+                    Link Direto de Recuperação
+                </div>
+                <a href="{baseUrl + '/password/reset/' + event.token}" class="reset-button">
+                    🔄 Redefinir Senha Agora
+                </a>
+                <p style="color: #64748B; font-size: 14px; margin-top: 8px;">
+                    Ou copie e cole o link abaixo:
+                </p>
+                <div class="reset-url">{baseUrl + '/password/reset/' + event.token}</div>
+            </div>
+
+            <!-- User Information -->
+            <div class="user-info-card">
+                <div class="user-info-title">
+                    <span>👤</span>
+                    Informações da Solicitação
+                </div>
+                <div class="user-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Nome</span>
+                        <span class="info-value">{event.name}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Usuário</span>
+                        <span class="info-value">{event.username}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">E-mail</span>
+                        <span class="info-value">{event.email}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Solicitado em</span>
+                        <span class="info-value">{event.requestedAt.formatDateTime}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiration Warning -->
+            <div class="expiration-warning">
+                <div class="expiration-title">
+                    <span>⏰</span>
+                    Prazo de Validade
+                </div>
+                <p style="color: #991B1B; margin-bottom: 12px;">
+                    Este token de recuperação é válido por tempo limitado:
+                </p>
+                <div class="expiration-timer">
+                    Válido até: {event.expireAt.formatDateTime}
+                </div>
+                <p style="color: #991B1B; font-size: 14px;">
+                    Após esta data, você precisará solicitar um novo token.
+                </p>
+            </div>
+
+            <!-- Security Information -->
+            <div class="security-info">
+                <div class="security-title">
+                    <span>⚠️</span>
+                    Informações de Segurança
+                </div>
+                <ul class="security-list">
+                    <li>Nunca compartilhe este token, senha ou link com outras pessoas</li>
+                    <li>Este token é válido apenas para uma única utilização</li>
+                    <li>Após redefinir sua senha, este token será invalidado automaticamente</li>
+                    <li>Se você não solicitou esta recuperação, ignore este e-mail</li>
+                    <li>Mantenha suas credenciais em local seguro</li>
+                </ul>
+            </div>
+
+            <!-- Action Note -->
+            <div
+                style="text-align: center; margin-top: 32px; padding: 16px; background-color: #F8FAFC; border-radius: 6px;">
+                <p style="color: #64748B; font-size: 14px;">
+                    <strong>Precisa de ajuda?</strong> Entre em contato com nossa equipe de suporte ou
+                    <a href="{baseUrl + '/help'}" style="color: #2563EB; text-decoration: none; font-weight: 500;">
+                        acesse a Central de Ajuda
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <div class="footer-links">
+                <a href="{baseUrl}">Acessar Sistema</a>
+                <a href="{baseUrl + '/help'}">Central de Ajuda</a>
+                <a href="{baseUrl + '/security'}">Central de Segurança</a>
+            </div>
+            <p class="copyright">
+                © 2026 Backoffice Passport. Todos os direitos reservados.<br>
+                Esta é uma mensagem automática de segurança, por favor não responda este e-mail.<br>
+                ID da Solicitação: <span style="font-family: monospace; color: #94A3B8;">{event.token}...</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const tokenElement = document.querySelector('.token-value');
+            const token = tokenElement.textContent;
+
+            navigator.clipboard.writeText(token).then(() => {
+                const button = document.querySelector('.copy-button');
+                const originalText = button.innerHTML;
+                button.innerHTML = '✓ Copiado!';
+                button.style.backgroundColor = '#059669';
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+
+</html>

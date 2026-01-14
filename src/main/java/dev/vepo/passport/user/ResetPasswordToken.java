@@ -1,6 +1,7 @@
 package dev.vepo.passport.user;
 
 import java.time.Instant;
+import java.util.Objects;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -41,9 +42,9 @@ public class ResetPasswordToken {
     public ResetPasswordToken() {}
 
     public ResetPasswordToken(String token, String encodedPassword, User user) {
-        this.token = token;
-        this.encodedPassword = encodedPassword;
-        this.user = user;
+        this.token = Objects.requireNonNull(token, "token is required!");
+        this.encodedPassword = Objects.requireNonNull(encodedPassword, "encodedPassword is required!");
+        this.user = Objects.requireNonNull(user, "user is required!");
         this.used = false;
     }
 

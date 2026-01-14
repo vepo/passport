@@ -1,5 +1,7 @@
 package dev.vepo.passport.user;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +54,11 @@ public class UserRepository {
         return user;
     }
 
+    public ResetPasswordToken save(ResetPasswordToken token) {
+        em.persist(token);
+        return token;
+    }
+
     public Stream<User> search(String name, String email, List<Role> roles) {
         logger.info("Searching for users...");
         var cb = em.getCriteriaBuilder();
@@ -85,5 +92,14 @@ public class UserRepository {
         return em.createQuery(cq)
                  .getResultStream()
                  .filter(u -> roles.isEmpty() || u.getRoles().containsAll(roles));
+    }
+
+    public Optional<ResetPasswordToken> findValidResetPasswordToken(Long id) {
+        return em.createQuery("FROM ResetPasswordToken WHERE user.id = :userId AND requestedAt > :expire_threshold", ResetPasswordToken.class)
+                 .setParameter("userId", id)
+                 .setParameter("expire_threshold", Instant.now()
+                                                          .minus(Duration.ofDays(1)))
+                 .getResultStream()
+                 .findFirst();
     }
 }
