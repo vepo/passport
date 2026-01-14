@@ -1,6 +1,5 @@
 package dev.vepo.passport.auth;
 
-
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
@@ -12,7 +11,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import dev.vepo.passport.infra.MorphoBoardException;
+import dev.vepo.passport.infra.PassportException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -49,7 +48,7 @@ public class PasswordEncoder {
             byte[] securePassword = fac.generateSecret(spec).getEncoded();
             return Base64.getEncoder().encodeToString(securePassword);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            throw new MorphoBoardException("Error encoding password", ex);
+            throw new PassportException("Error encoding password", ex);
         } finally {
             spec.clearPassword();
         }
