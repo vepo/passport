@@ -54,7 +54,7 @@ public class RequestResetPasswordEndpoint {
     }
 
     private void recovery(User user) {
-        this.userRepository.findValidResetPasswordToken(user.getId())
+        this.userRepository.findValidResetPasswordTokenByUserId(user.getId())
                            .ifPresentOrElse(toke -> logger.warn("There is one reset password token active for user! username={}", user.getUsername()),
                                             () -> createPasswordToken(user));
     }

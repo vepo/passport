@@ -45,6 +45,7 @@ public class ResetPasswordToken {
         this.token = Objects.requireNonNull(token, "token is required!");
         this.encodedPassword = Objects.requireNonNull(encodedPassword, "encodedPassword is required!");
         this.user = Objects.requireNonNull(user, "user is required!");
+        this.requestedAt = Instant.now();
         this.used = false;
     }
 

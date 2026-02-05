@@ -94,11 +94,32 @@ public class UserRepository {
                  .filter(u -> roles.isEmpty() || u.getRoles().containsAll(roles));
     }
 
-    public Optional<ResetPasswordToken> findValidResetPasswordToken(Long id) {
-        return em.createQuery("FROM ResetPasswordToken WHERE user.id = :userId AND requestedAt > :expire_threshold", ResetPasswordToken.class)
-                 .setParameter("userId", id)
+    public Optional<ResetPasswordToken> findValidResetPasswordTokenByUserId(Long userId) {
+        return em.createQuery("""
+                              FROM ResetPasswordToken
+                              WHERE user.id = :userId AND
+                                    requestedAt > :expire_threshold AND
+                                    used <> true
+                              """, ResetPasswordToken.class)
+                 .setParameter("userId", userId)
                  .setParameter("expire_threshold", Instant.now()
                                                           .minus(Duration.ofDays(1)))
+                 .getResultStream()
+                 .findFirst();
+    }
+
+    public Optional<ResetPasswordToken> findValidResetPasswordTokenByTokenAndPassword(String token, String recoveryPassword) {
+        return em.createQuery("""
+                              FROM ResetPasswordToken
+                              WHERE token = :token AND
+                                    encodedPassword = :encodedPassword AND
+                                    requestedAt > :expire_threshold AND
+                                    used <> true
+                              """, ResetPasswordToken.class)
+                 .setParameter("token", token)
+                 .setParameter("encodedPassword", recoveryPassword)
+                 .setParameter("expire_threshold", Instant.now()
+                                                                .minus(Duration.ofDays(1)))
                  .getResultStream()
                  .findFirst();
     }
