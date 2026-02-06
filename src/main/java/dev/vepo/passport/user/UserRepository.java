@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dev.vepo.passport.model.ResetPasswordToken;
+import dev.vepo.passport.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -59,7 +61,7 @@ public class UserRepository {
         return token;
     }
 
-    public Stream<User> search(String name, String email, List<Role> roles) {
+    public Stream<User> search(String name, String email, List<Long> profileIds, List<Long> roleIds) {
         logger.info("Searching for users...");
         var cb = em.getCriteriaBuilder();
         var cq = cb.createQuery(User.class);
@@ -77,21 +79,37 @@ public class UserRepository {
             predicates.add(cb.like(cb.lower(user.get("email")), "%%%s%%".formatted(email).toLowerCase()));
         }
 
-        // TODO: Filter on query
-        // if (Objects.nonNull(roles) && !roles.isEmpty()) {
-        // predicates.addAll(roles.stream()
-        // .map(role -> cb.like(user.get("roles").as(String.class),
-        // String.format("%%%s%%", role.name())))
-        // .toList());
-        // }
+        // Filter by profiles using subquery (if profile IDs are provided)
+        if (Objects.nonNull(profileIds) && !profileIds.isEmpty()) {
+            var subquery = cq.subquery(Long.class);
+            var subUser = subquery.correlate(user);
+            var subProfileJoin = subUser.join("profiles");
 
+            subquery.select(subUser.get("id"))
+                    .where(subProfileJoin.get("id").in(profileIds));
+
+            predicates.add(cb.exists(subquery));
+        }
+
+        // Filter by roles using subquery (if role IDs are provided)
+        if (Objects.nonNull(roleIds) && !roleIds.isEmpty()) {
+            var subquery = cq.subquery(Long.class);
+            var subUser = subquery.correlate(user);
+            var subProfileJoin = subUser.join("profiles");
+            var subRoleJoin = subProfileJoin.join("roles");
+
+            subquery.select(subUser.get("id"))
+                    .where(subRoleJoin.get("id").in(roleIds));
+
+            predicates.add(cb.exists(subquery));
+        }
+
+        // Apply all predicates
         if (!predicates.isEmpty()) {
             cq = cq.where(cb.and(predicates));
         }
 
-        return em.createQuery(cq)
-                 .getResultStream()
-                 .filter(u -> roles.isEmpty() || u.getRoles().containsAll(roles));
+        return em.createQuery(cq).getResultStream();
     }
 
     public Optional<ResetPasswordToken> findValidResetPasswordTokenByUserId(Long userId) {
@@ -119,7 +137,7 @@ public class UserRepository {
                  .setParameter("token", token)
                  .setParameter("encodedPassword", recoveryPassword)
                  .setParameter("expire_threshold", Instant.now()
-                                                                .minus(Duration.ofDays(1)))
+                                                          .minus(Duration.ofDays(1)))
                  .getResultStream()
                  .findFirst();
     }

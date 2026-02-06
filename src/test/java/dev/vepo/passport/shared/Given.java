@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Objects;
 
 import dev.vepo.passport.auth.JwtGenerator;
-import dev.vepo.passport.user.User;
+import dev.vepo.passport.model.User;
 import dev.vepo.passport.user.UserRepository;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;

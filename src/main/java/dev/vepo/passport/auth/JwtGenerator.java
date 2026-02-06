@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import dev.vepo.passport.user.Role;
-import dev.vepo.passport.user.User;
+import dev.vepo.passport.model.Role;
+import dev.vepo.passport.model.User;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -26,9 +26,11 @@ public class JwtGenerator {
                   .claim("username", user.getUsername())
                   .claim("id", user.getId())
                   .claim("email", user.getEmail())
-                  .groups(user.getRoles()
+                  .groups(user.getProfiles()
                               .stream()
-                              .map(Role::role)
+                              .flatMap(profile -> profile.getRoles().stream())
+                              .distinct()
+                              .map(Role::getName)
                               .collect(Collectors.toSet()))
                   .issuedAt(now)
                   .expiresAt(now.plus(1, ChronoUnit.DAYS))
