@@ -89,16 +89,16 @@ public class UserRepository {
 
     public Optional<User> findActiveByUsernameAndPassword(String username, String encodedPassword) {
         return entityManager.createQuery("""
-                                         FROM User 
-                                         WHERE username = :username AND 
-                                               encodedPassword = :encodedPassword AND 
+                                         FROM User
+                                         WHERE username = :username AND
+                                               encodedPassword = :encodedPassword AND
                                                deleted = false
                                          """, User.class)
                             .setParameter("username", username)
                             .setParameter("encodedPassword", encodedPassword)
                             .getResultStream()
                             .findFirst();
-        }
+    }
 
     public Optional<User> findByUsername(String username) {
         return entityManager.createQuery("FROM User WHERE username = :username", User.class)
@@ -133,7 +133,9 @@ public class UserRepository {
 
     public ResetPasswordToken save(ResetPasswordToken token) {
         try {
+            logger.info("Requested at before={}", token.getRequestedAt());
             entityManager.persist(token);
+            logger.info("Requested at after={}", token.getRequestedAt());
             logger.debug("Persisted reset password token for user ID: {}", token.getUser().getId());
             return token;
         } catch (PersistenceException e) {
@@ -188,7 +190,8 @@ public class UserRepository {
                                          WHERE token = :token AND
                                                encodedPassword = :encodedPassword AND
                                                requestedAt > :expire_threshold AND
-                                               used <> true
+                                               used = false AND
+                                               user.deleted = false
                                          """, ResetPasswordToken.class)
                             .setParameter("token", token)
                             .setParameter("encodedPassword", recoveryPassword)

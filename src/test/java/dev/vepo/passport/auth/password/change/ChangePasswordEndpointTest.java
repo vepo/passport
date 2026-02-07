@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,11 @@ class ChangePasswordEndpointTest {
     private static final String NEW_PASSWORD = "newSecurePassword456";
     private static final String WRONG_PASSWORD = "wrongPassword123";
     private static final String STRONG_NEW_PASSWORD = "Str0ngP@ssw0rd!2024";
+
+    @BeforeEach
+    void cleanup() {
+        Given.cleanup();
+    }
 
     @Nested
     @DisplayName("Authentication Required")
@@ -283,7 +289,7 @@ class ChangePasswordEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_BAD_REQUEST)
                    .body("violations[0].field", is("change.request.newPassword"))
-                   .body("violations[0].message", is("Password must be at least 8 characters long"));
+                   .body("violations[0].message", is("size must be between 8 and 20"));
         }
 
         @Test
@@ -398,10 +404,35 @@ class ChangePasswordEndpointTest {
         }
 
         @Test
-        @DisplayName("Should accept long passwords")
-        void changePassword_WithLongPassword_ReturnsOk() {
+        @DisplayName("Should accept passwords with at most 20 characters")
+        void changePassword_WithVeryLongPassword_ReturnsBadRequest() {
             // Arrange
             var longPassword = "VeryLongPassword1234567890!@#$%^&*()";
+            var userAuth = Given.user()
+                                .withName("Long Password User")
+                                .withUsername("longpassuser")
+                                .withEmail("verylongpass@passport.vepo.dev")
+                                .withPassword(CURRENT_PASSWORD)
+                                .persist()
+                                .authenticated();
+
+            // Act & Assert
+            given().header(userAuth)
+                   .contentType(ContentType.JSON)
+                   .body(changePasswordRequest(CURRENT_PASSWORD, longPassword))
+                   .when()
+                   .post(CHANGE_PASSWORD_ENDPOINT)
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations[0].field", is("change.request.newPassword"))
+                   .body("violations[0].message", is("size must be between 8 and 20"));
+        }
+
+        @Test
+        @DisplayName("Should accept long passwords")
+        void changePassword_WithPassword_ReturnsOk() {
+            // Arrange
+            var longPassword = "LongPassword8!@%&*()";
             var userAuth = Given.user()
                                 .withName("Long Password User")
                                 .withUsername("longpassuser")

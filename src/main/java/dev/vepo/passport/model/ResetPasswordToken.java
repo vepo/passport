@@ -3,8 +3,6 @@ package dev.vepo.passport.model;
 import java.time.Instant;
 import java.util.Objects;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,19 +32,23 @@ public class ResetPasswordToken {
 
     private boolean used;
 
-    @CreationTimestamp
-    @Column(name = "requestedAt", nullable = false)
+    @Column(name = "requested_at", nullable = false)
     private Instant requestedAt;
 
     // Constructors
     public ResetPasswordToken() {}
 
     public ResetPasswordToken(String token, String encodedPassword, User user) {
+        this(null, token, encodedPassword, user, false, Instant.now());
+    }
+
+    public ResetPasswordToken(Long id, String token, String encodedPassword, User user, boolean used, Instant requestedAt) {
+        this.id = id;
         this.token = Objects.requireNonNull(token, "token is required!");
         this.encodedPassword = Objects.requireNonNull(encodedPassword, "encodedPassword is required!");
         this.user = Objects.requireNonNull(user, "user is required!");
-        this.requestedAt = Instant.now();
-        this.used = false;
+        this.requestedAt = requestedAt;
+        this.used = used;
     }
 
     public Long getId() {

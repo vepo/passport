@@ -31,13 +31,18 @@ class CurrentUserEndpointTest {
     @Test
     @DisplayName("Should return OK with user details when authenticated with valid user")
     void getCurrentUser_WithValidAuthentication_ReturnsUserDetails() {
-        var authenticatedUser = Given.user("sysadmin@passport.vepo.dev");
+        var user = Given.user()
+                        .withEmail("active.user@passport.vepo.dev")
+                        .withName("Active User")
+                        .withUsername("deleted-user")
+                        .withPassword("encryptedPassword123")
+                        .persist();
 
-        given().header(authenticatedUser.authenticated())
+        given().header(user.authenticated())
                .when().get("/api/auth/me")
                .then()
                .statusCode(HttpStatus.SC_OK)
-               .body("username", is(authenticatedUser.username()));
+               .body("username", is(user.username()));
     }
 
     @Test

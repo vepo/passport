@@ -3,6 +3,7 @@ package dev.vepo.passport.shared;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import dev.vepo.passport.auth.JwtGenerator;
 import dev.vepo.passport.model.Profile;
+import dev.vepo.passport.model.ResetPasswordToken;
 import dev.vepo.passport.model.User;
 import dev.vepo.passport.shared.security.PasswordEncoder;
 import dev.vepo.passport.user.UserRepository;
@@ -22,8 +24,6 @@ import jakarta.enterprise.inject.spi.CDI;
 import jakarta.persistence.EntityManager;
 
 public class Given {
-    private static final Logger logger = LoggerFactory.getLogger(Given.class);
-
     public static class UserBuilder {
         private Long id;
         private String email;
@@ -106,8 +106,63 @@ public class Given {
         }
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(Given.class);
+
     public static UserBuilder user() {
         return new UserBuilder();
+    }
+
+    public static class ResetPasswordTokenBuilder {
+        private User user;
+        private String token;
+        private String password;
+        private boolean used;
+        private Instant requestedAt;
+
+        private ResetPasswordTokenBuilder() {
+            this.user = null;
+            this.token = null;
+            this.password = null;
+            this.used = false;
+            this.requestedAt = null;
+        }
+
+        public ResetPasswordTokenBuilder withToken(String token) {
+            this.token = token;
+            return this;
+        }
+
+        public ResetPasswordTokenBuilder withUser(GivenUser user) {
+            this.user = user.user;
+            return this;
+        }
+
+        public ResetPasswordTokenBuilder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public ResetPasswordTokenBuilder withUsed(boolean used) {
+            this.used = used;
+            return this;
+        }
+
+        public ResetPasswordTokenBuilder withRequestedAt(Instant requestedAt) {
+            this.requestedAt = requestedAt;
+            return this;
+        }
+
+        public ResetPasswordToken build() {
+            return new ResetPasswordToken(null, token, inject(PasswordEncoder.class).hashPassword(password), user, this.used, this.requestedAt);
+        }
+
+        public void persist() {
+            withTransaction(() -> inject(UserRepository.class).save(build()));
+        }
+    }
+
+    public static ResetPasswordTokenBuilder resetPassword() {
+        return new ResetPasswordTokenBuilder();
     }
 
     public static GivenUser user(String email) {
@@ -156,10 +211,10 @@ public class Given {
     public static void cleanup() {
         withTransaction(() -> {
             var em = inject(EntityManager.class);
-            em.createQuery("DELETE FROM ResetPasswordToken");
-            em.createQuery("DELETE FROM User");
-            em.createQuery("DELETE FROM Profile");
-            em.createQuery("DELETE FROM Role");
+            em.createQuery("DELETE FROM ResetPasswordToken").executeUpdate();
+            em.createQuery("DELETE FROM User").executeUpdate();
+            em.createQuery("DELETE FROM Profile").executeUpdate();
+            em.createQuery("DELETE FROM Role").executeUpdate();
         });
     }
 

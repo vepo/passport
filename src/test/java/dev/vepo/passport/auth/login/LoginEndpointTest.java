@@ -34,6 +34,13 @@ class LoginEndpointTest {
     @Test
     @DisplayName("Should return authentication token with valid credentials")
     void login_WithValidCredentials_ReturnsAuthenticationToken() {
+        Given.user()
+             .withEmail(ADMIN_EMAIL)
+             .withName("Admin")
+             .withUsername("admin-user")
+             .withPassword(ADMIN_PASSWORD)
+             .persist();
+
         given().contentType(ContentType.JSON)
                .body(loginRequest(ADMIN_EMAIL, ADMIN_PASSWORD))
                .when()

@@ -55,3 +55,6 @@ ON CONFLICT (profile_id, role_id) DO NOTHING;
 
 ALTER TABLE tb_users
 DROP COLUMN roles;
+
+ALTER TABLE tb_users_reset_password_token
+RENAME COLUMN requestedAt TO requested_at;
