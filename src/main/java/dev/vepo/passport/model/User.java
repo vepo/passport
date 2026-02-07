@@ -53,13 +53,18 @@ public class User {
 
     public User() {}
 
-    public User(String username, String name, String email, String encodedPassword, Set<Profile> profiles) {
+    public User(Long id, String username, String name, String email, String encodedPassword, Set<Profile> profiles, boolean deleted) {
+        this.id = id;
         this.username = username;
         this.name = name;
         this.email = email;
         this.encodedPassword = encodedPassword;
         this.profiles = profiles;
-        this.deleted = false;
+        this.deleted = deleted;
+    }
+
+    public User(String username, String name, String email, String encodedPassword, Set<Profile> profiles) {
+        this(null, username, name, email, encodedPassword, profiles, false);
     }
 
     public Long getId() {

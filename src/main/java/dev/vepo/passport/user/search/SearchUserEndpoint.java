@@ -34,7 +34,12 @@ public class SearchUserEndpoint {
                                      @QueryParam("email") String email,
                                      @QueryParam("profiles") List<Long> profiles,
                                      @QueryParam("roles") List<Long> roles) {
-        return userRepository.search(name, email, profiles, roles)
+        return userRepository.search()
+                             .name(name)
+                             .email(email)
+                             .profileIds(profiles)
+                             .roleIds(roles)
+                             .execute()
                              .map(UserResponse::load)
                              .toList();
     }

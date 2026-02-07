@@ -5,6 +5,7 @@ import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.is;
 
 import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -12,35 +13,65 @@ import dev.vepo.passport.shared.Given;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
+@DisplayName("Current User API Endpoint Tests")
 class CurrentUserEndpointTest {
+    @BeforeEach
+    void cleanup() {
+        Given.cleanup();
+    }
+
     @Test
-    @DisplayName("Test if not authenticated")
-    void notAuthenticatedTest() {
+    @DisplayName("Should return UNAUTHORIZED when accessing endpoint without authentication")
+    void getCurrentUser_WithoutAuthentication_ReturnsUnauthorized() {
         when().get("/api/auth/me")
               .then()
               .statusCode(HttpStatus.SC_UNAUTHORIZED);
     }
 
     @Test
-    @DisplayName("Test if authenticated")
-    void authenticatedTest() {
-        var user = Given.user("sysadmin@passport.vepo.dev");
-        given().header(user.authenticated())
+    @DisplayName("Should return OK with user details when authenticated with valid user")
+    void getCurrentUser_WithValidAuthentication_ReturnsUserDetails() {
+        var authenticatedUser = Given.user("sysadmin@passport.vepo.dev");
+
+        given().header(authenticatedUser.authenticated())
                .when().get("/api/auth/me")
                .then()
                .statusCode(HttpStatus.SC_OK)
-               .body("username", is(user.username()));
+               .body("username", is(authenticatedUser.username()));
     }
 
-    // @Test
-    // @DisplayName("Test if authenticated")
-    // void notRegisteredUserTest() {
-    // var user = Given.user(new User("not-registered", "Not Registered",
-    // "not-registerd@passport.vepo.dev", "",
-    // Set.of(Role.ADMIN, Role.PROJECT_MANAGER, Role.USER)));
-    // given().header(user.authenticated())
-    // .when().get("/api/auth/me")
-    // .then()
-    // .statusCode(HttpStatus.SC_UNAUTHORIZED);
-    // }
+    @Test
+    @DisplayName("Should return UNAUTHORIZED when authenticated with non-existent user")
+    void getCurrentUser_WithNonExistentUser_ReturnsUnauthorized() {
+        var nonExistentUser = Given.user()
+                                   .withId(999L)
+                                   .withEmail("non-existent@passport.vepo.dev")
+                                   .withName("Non Existent User")
+                                   .withUsername("non-existent")
+                                   .withPassword("encryptedPassword123")
+                                   .authenticated();
+
+        given().header(nonExistentUser)
+               .when().get("/api/auth/me")
+               .then()
+               .statusCode(HttpStatus.SC_UNAUTHORIZED);
+    }
+
+    @Test
+    @DisplayName("Should return UNAUTHORIZED when authenticated with deleted user")
+    void getCurrentUser_WithDeletedUser_ReturnsUnauthorized() {
+        var deletedUser = Given.user()
+                               .withEmail("deleted.user@passport.vepo.dev")
+                               .withName("Deleted User")
+                               .withUsername("deleted-user")
+                               .withPassword("encryptedPassword123")
+                               .withDeleted(true)
+                               .persist()
+                               .authenticated();
+
+        given().header(deletedUser)
+               .when().get("/api/auth/me")
+               .then()
+               .statusCode(HttpStatus.SC_UNAUTHORIZED);
+    }
 }

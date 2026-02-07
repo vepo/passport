@@ -31,7 +31,7 @@ public class LoginEndpoint {
 
     @POST
     public LoginResponse login(@Valid LoginRequest request) {
-        return this.userRepository.findByEmail(request.email())
+        return this.userRepository.findActiveByEmail(request.email())
                                   .filter(u -> passwordEncoder.matches(request.password(), u.getEncodedPassword()))
                                   .map(user -> LoginResponse.load(jwtGenerator.generate(user), user))
                                   .orElseThrow(() -> new NotAuthorizedException("Invalid credentials!", request));

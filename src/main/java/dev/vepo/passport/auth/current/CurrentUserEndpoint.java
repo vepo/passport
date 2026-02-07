@@ -24,7 +24,7 @@ public class CurrentUserEndpoint {
 
     @GET
     public CurrentUserResponse requestAuthenticatedUserInformation(@Context SecurityContext ctx) {
-        return userRepository.findByUsername(ctx.getUserPrincipal().getName())
+        return userRepository.findActiveByUsername(ctx.getUserPrincipal().getName())
                              .map(CurrentUserResponse::load)
                              .orElseThrow(() -> new NotAuthorizedException("Unauthorized"));
     }
