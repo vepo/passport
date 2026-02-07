@@ -87,6 +87,19 @@ public class UserRepository {
                             .findFirst();
     }
 
+    public Optional<User> findActiveByUsernameAndPassword(String username, String encodedPassword) {
+        return entityManager.createQuery("""
+                                         FROM User 
+                                         WHERE username = :username AND 
+                                               encodedPassword = :encodedPassword AND 
+                                               deleted = false
+                                         """, User.class)
+                            .setParameter("username", username)
+                            .setParameter("encodedPassword", encodedPassword)
+                            .getResultStream()
+                            .findFirst();
+        }
+
     public Optional<User> findByUsername(String username) {
         return entityManager.createQuery("FROM User WHERE username = :username", User.class)
                             .setParameter("username", username)
