@@ -375,7 +375,7 @@ class RequestResetPasswordEndpointTest {
             // Arrange
             String storedEmail = "User@Example.com";
             String requestEmail = "user@example.com";
-            
+
             Given.user()
                  .withName("Case Test User")
                  .withUsername("casetest")

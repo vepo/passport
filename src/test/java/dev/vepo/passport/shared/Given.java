@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +16,18 @@ import org.slf4j.LoggerFactory;
 import dev.vepo.passport.auth.JwtGenerator;
 import dev.vepo.passport.model.Profile;
 import dev.vepo.passport.model.ResetPasswordToken;
+import dev.vepo.passport.model.Role;
 import dev.vepo.passport.model.User;
+import dev.vepo.passport.profile.ProfileRepository;
+import dev.vepo.passport.role.RoleRepository;
 import dev.vepo.passport.shared.security.PasswordEncoder;
+import dev.vepo.passport.shared.security.RequiredRoles;
 import dev.vepo.passport.user.UserRepository;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Status;
 
 public class Given {
     public static class UserBuilder {
@@ -106,12 +112,6 @@ public class Given {
         }
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Given.class);
-
-    public static UserBuilder user() {
-        return new UserBuilder();
-    }
-
     public static class ResetPasswordTokenBuilder {
         private User user;
         private String token;
@@ -161,8 +161,50 @@ public class Given {
         }
     }
 
+    public static class ProfileBuilder {
+        private String name;
+        private Set<String> roles;
+
+        private ProfileBuilder() {
+            this.name = null;
+            this.roles = new HashSet<>();
+        }
+
+        public ProfileBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ProfileBuilder withRole(String role) {
+            this.roles.add(role);
+            return this;
+        }
+
+        private Set<Role> asRoles() {
+            var roleRepository = inject(RoleRepository.class);
+            return this.roles.stream()
+                             .map(role -> roleRepository.findByName(role)
+                                                        .orElseGet(() -> roleRepository.save(new Role(role))))
+                             .collect(Collectors.toSet());
+        }
+
+        public Profile persist() {
+            return withTransaction(() -> inject(ProfileRepository.class).save(new Profile(name, asRoles())));
+        }
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(Given.class);
+
+    public static UserBuilder user() {
+        return new UserBuilder();
+    }
+
     public static ResetPasswordTokenBuilder resetPassword() {
         return new ResetPasswordTokenBuilder();
+    }
+
+    public static ProfileBuilder profile() {
+        return new ProfileBuilder();
     }
 
     public static GivenUser user(String email) {
@@ -183,28 +225,36 @@ public class Given {
     }
 
     public static void withTransaction(Runnable block) {
-        try {
-            QuarkusTransaction.begin();
+        if (QuarkusTransaction.getStatus() == Status.STATUS_ACTIVE) {
             block.run();
-            QuarkusTransaction.commit();
-        } catch (Exception e) {
-            logger.error("Could not commit transaction!", e);
-            QuarkusTransaction.rollback();
-            fail("Fail to create transaction!", e);
+        } else {
+            try {
+                QuarkusTransaction.begin();
+                block.run();
+                QuarkusTransaction.commit();
+            } catch (Exception e) {
+                logger.error("Could not commit transaction!", e);
+                QuarkusTransaction.rollback();
+                fail("Fail to create transaction!", e);
+            }
         }
     }
 
     public static <T> T withTransaction(Supplier<T> block) {
-        try {
-            QuarkusTransaction.begin();
+        if (QuarkusTransaction.getStatus() == Status.STATUS_ACTIVE) {
             return block.get();
-        } catch (Exception e) {
-            logger.error("Could not commit transaction!", e);
-            QuarkusTransaction.rollback();
-            fail("Fail to create transaction!", e);
-            return null;
-        } finally {
-            QuarkusTransaction.commit();
+        } else {
+            try {
+                QuarkusTransaction.begin();
+                return block.get();
+            } catch (Exception e) {
+                logger.error("Could not commit transaction!", e);
+                QuarkusTransaction.rollback();
+                fail("Fail to create transaction!", e);
+                return null;
+            } finally {
+                QuarkusTransaction.commit();
+            }
         }
     }
 
@@ -216,6 +266,22 @@ public class Given {
             em.createQuery("DELETE FROM Profile").executeUpdate();
             em.createQuery("DELETE FROM Role").executeUpdate();
         });
+    }
+
+    public static Profile adminProfile() {
+        return inject(ProfileRepository.class).findByName("Admin")
+                                              .orElseGet(() -> profile().withName("Admin")
+                                                                        .withRole(RequiredRoles.ADMIN)
+                                                                        .persist());
+    }
+
+    public static GivenUser admin() {
+        return new GivenUser(inject(UserRepository.class).findActiveByUsername("admin")
+                                                         .orElseGet(() -> withTransaction(() -> inject(UserRepository.class).save(new User("admin",
+                                                                                                                                           "Admin",
+                                                                                                                                           "admin@passport.vepo.dev",
+                                                                                                                                           inject(PasswordEncoder.class).hashPassword("qwas1234"),
+                                                                                                                                           Set.of(adminProfile()))))));
     }
 
 }

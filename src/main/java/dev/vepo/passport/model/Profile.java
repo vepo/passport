@@ -1,5 +1,6 @@
 package dev.vepo.passport.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -22,9 +23,6 @@ public class Profile {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "profiles")
-    private Set<User> users;
-
     @ManyToMany
     @JoinTable(name = "tb_profile_roles", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
@@ -32,7 +30,12 @@ public class Profile {
     public Profile() {}
 
     public Profile(String name) {
+        this(name, new HashSet<>());
+    }
+
+    public Profile(String name, Set<Role> roles) {
         this.name = name;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -49,14 +52,6 @@ public class Profile {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
     }
 
     public Set<Role> getRoles() {

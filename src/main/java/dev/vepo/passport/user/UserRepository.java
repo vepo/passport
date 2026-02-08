@@ -22,6 +22,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.validation.ConstraintViolationException;
 
 @ApplicationScoped
 public class UserRepository {
@@ -107,6 +108,14 @@ public class UserRepository {
                             .findFirst();
     }
 
+    public List<User> findByUsernameOrEmail(String username, String email) {
+        return entityManager.createQuery("FROM User WHERE username = :username OR email = :email", User.class)
+                            .setParameter("username", username)
+                            .setParameter("email", email)
+                            .getResultStream()
+                            .toList();
+    }
+
     public Optional<User> findById(Long id) {
         return entityManager.createQuery("FROM User WHERE id = :id", User.class)
                             .setParameter("id", id)
@@ -125,6 +134,9 @@ public class UserRepository {
                 logger.debug("Updated existing user with ID: {}", user.getId());
                 return merged;
             }
+        } catch (ConstraintViolationException cve) {
+            logger.error("Failed to save user with email: {}", user.getEmail(), cve);
+            throw new RepositoryException("Failed to save user", cve);
         } catch (PersistenceException e) {
             logger.error("Failed to save user with email: {}", user.getEmail(), e);
             throw new RepositoryException("Failed to save user", e);
@@ -133,9 +145,7 @@ public class UserRepository {
 
     public ResetPasswordToken save(ResetPasswordToken token) {
         try {
-            logger.info("Requested at before={}", token.getRequestedAt());
             entityManager.persist(token);
-            logger.info("Requested at after={}", token.getRequestedAt());
             logger.debug("Persisted reset password token for user ID: {}", token.getUser().getId());
             return token;
         } catch (PersistenceException e) {
