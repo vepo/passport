@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import dev.vepo.passport.model.Profile;
 import dev.vepo.passport.model.Role;
 import dev.vepo.passport.shared.Given;
+import dev.vepo.passport.shared.security.RequiredRoles;
 import dev.vepo.passport.user.UserRepository;
 import dev.vepo.passport.user.UserResponse;
 import io.quarkus.test.junit.QuarkusTest;
@@ -54,7 +55,7 @@ class SearchUserEndpointTest {
 
         // Create roles
         Given.role()
-             .withName("ADMIN")
+             .withName(RequiredRoles.ADMIN)
              .persist();
         userRole = Given.role()
                         .withName("USER")
@@ -63,7 +64,7 @@ class SearchUserEndpointTest {
         // Create profiles with roles
         Given.profile()
              .withName("Administrator")
-             .withRole("ADMIN")
+             .withRole(RequiredRoles.ADMIN)
              .persist();
 
         userProfile = Given.profile()

@@ -4,7 +4,6 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -347,284 +346,242 @@ class UpdateUserEndpointTest {
     @DisplayName("Validation Tests")
     class ValidationTests {
 
-        @Nested
-        @DisplayName("Validation Tests")
-        class ValidationTests {
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for empty name")
+        void updateUser_EmptyName_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "",
+                                        "email": "updated@example.com",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for empty name")
-            void updateUser_EmptyName_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "",
-                                            "email": "updated@example.com",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST);
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             is("must not be blank"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for invalid email")
+        void updateUser_InvalidEmail_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "Updated Name",
+                                        "email": "invalid-email",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for invalid email")
-            void updateUser_InvalidEmail_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "Updated Name",
-                                            "email": "invalid-email",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.find{ it.field == 'update.request.email' }.message",
+                         containsString("must be a well-formed email address"));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             containsString("must be a well-formed email address"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for null name")
+        void updateUser_NullName_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "email": "updated@example.com",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for null name")
-            void updateUser_NullName_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "email": "updated@example.com",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.find{ it.field == 'update.request.name' }.message",
+                         is("must not be blank"));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             is("must not be blank"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for null email")
+        void updateUser_NullEmail_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "Updated Name",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for null email")
-            void updateUser_NullEmail_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "Updated Name",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.find{ it.field == 'update.request.email' }.message",
+                         is("must not be blank"));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             is("must not be blank"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for very long name")
+        void updateUser_LongName_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String longName = "A".repeat(256); // Assuming @Size(max = 255)
+            String invalidRequest = String.format("""
+                                                  {
+                                                      "name": "%s",
+                                                      "email": "updated@example.com",
+                                                      "profileIds": []
+                                                  }
+                                                  """, longName);
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for very long name")
-            void updateUser_LongName_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String longName = "A".repeat(256); // Assuming @Size(max = 255)
-                String invalidRequest = String.format("""
-                                                      {
-                                                          "name": "%s",
-                                                          "email": "updated@example.com",
-                                                          "profileIds": []
-                                                      }
-                                                      """, longName);
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.find{ it.field == 'update.request.name' }.message",
+                         containsString("size must be between"));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             containsString("size must be between"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for very long email")
+        void updateUser_LongEmail_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String longEmail = "a".repeat(250) + "@example.com"; // > 255 chars
+            String invalidRequest = String.format("""
+                                                  {
+                                                      "name": "Updated Name",
+                                                      "email": "%s",
+                                                      "profileIds": []
+                                                  }
+                                                  """, longEmail);
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for very long email")
-            void updateUser_LongEmail_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String longEmail = "a".repeat(250) + "@example.com"; // > 255 chars
-                String invalidRequest = String.format("""
-                                                      {
-                                                          "name": "Updated Name",
-                                                          "email": "%s",
-                                                          "profileIds": []
-                                                      }
-                                                      """, longEmail);
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST);
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             containsString("size must be between"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for multiple violations")
+        void updateUser_MultipleViolations_ShouldReturnAllErrors() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "",
+                                        "email": "invalid-email",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for multiple violations")
-            void updateUser_MultipleViolations_ShouldReturnAllErrors() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "",
-                                            "email": "invalid-email",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.size()", is(3));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.size()", is(2))
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             is("must not be blank"))
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             containsString("must be a well-formed email address"))
-                       .body("violations.field", hasItems("update.request.name", "update.request.email"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for name with only whitespace")
+        void updateUser_WhitespaceName_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "   ",
+                                        "email": "updated@example.com",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for name with only whitespace")
-            void updateUser_WhitespaceName_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "   ",
-                                            "email": "updated@example.com",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.find{ it.field == 'update.request.name' }.message",
+                         is("must not be blank"));
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             is("must not be blank"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should return 400 for email with only whitespace")
+        void updateUser_WhitespaceEmail_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "Updated Name",
+                                        "email": "   ",
+                                        "profileIds": []
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should return 400 for email with only whitespace")
-            void updateUser_WhitespaceEmail_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "Updated Name",
-                                            "email": "   ",
-                                            "profileIds": []
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST);
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             is("must not be blank"));
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should validate profileIds format")
+        void updateUser_InvalidProfileIdsFormat_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = """
+                                    {
+                                        "name": "Updated Name",
+                                        "email": "updated@example.com",
+                                        "profileIds": ["invalid", "format"]
+                                    }
+                                    """;
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should validate profileIds format")
-            void updateUser_InvalidProfileIdsFormat_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "Updated Name",
-                                            "email": "updated@example.com",
-                                            "profileIds": ["invalid", "format"]
-                                        }
-                                        """;
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST);
+        }
 
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST);
-            }
+        @Test
+        @DisplayName("PUT /users/{userId} - should handle empty JSON")
+        void updateUser_EmptyJson_ShouldReturnBadRequest() {
+            long userId = regularUser.id();
+            String invalidRequest = "{}";
 
-            @Test
-            @DisplayName("PUT /users/{userId} - should handle empty JSON")
-            void updateUser_EmptyJson_ShouldReturnBadRequest() {
-                long userId = regularUser.id();
-                String invalidRequest = "{}";
-
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.size()", is(2))
-                       .body("violations.field", hasItems("update.request.name", "update.request.email"));
-            }
-
-            @Test
-            @DisplayName("PUT /users/{userId} - should validate all fields at once")
-            void updateUser_AllInvalidFields_ShouldReturnAllViolations() {
-                long userId = regularUser.id();
-                String invalidRequest = """
-                                        {
-                                            "name": "",
-                                            "email": "invalid",
-                                            "profileIds": ["not-a-number"]
-                                        }
-                                        """;
-
-                given().header(admin.authenticated())
-                       .contentType(ContentType.JSON)
-                       .body(invalidRequest)
-                       .when()
-                       .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
-                       .then()
-                       .statusCode(HttpStatus.SC_BAD_REQUEST)
-                       .body("violations.size()", greaterThanOrEqualTo(2))
-                       .body("violations.find{ it.field == 'update.request.name' }.message",
-                             is("must not be blank"))
-                       .body("violations.find{ it.field == 'update.request.email' }.message",
-                             containsString("must be a well-formed email address"));
-            }
+            given().header(admin.authenticated())
+                   .contentType(ContentType.JSON)
+                   .body(invalidRequest)
+                   .when()
+                   .put(UPDATE_USER_PATH.replace(":id", Long.toString(userId)))
+                   .then()
+                   .statusCode(HttpStatus.SC_BAD_REQUEST)
+                   .body("violations.size()", is(2))
+                   .body("violations.field", hasItems("update.request.name", "update.request.email"));
         }
     }
 

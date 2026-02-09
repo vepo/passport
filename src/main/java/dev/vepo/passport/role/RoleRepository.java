@@ -18,8 +18,8 @@ public class RoleRepository {
     }
 
     public Optional<Role> findByName(String name) {
-        return entityManager.createQuery("FROM Role WHERE name = :name", Role.class)
-                            .setParameter("name", name)
+        return entityManager.createQuery("FROM Role WHERE lower(name) = :name", Role.class)
+                            .setParameter("name", name.toLowerCase())
                             .getResultStream()
                             .findFirst();
     }
