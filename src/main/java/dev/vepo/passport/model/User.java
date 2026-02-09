@@ -41,7 +41,7 @@ public class User {
     @JoinTable(name = "tb_users_profiles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "profile_id"))
     private Set<Profile> profiles;
 
-    private boolean deleted;
+    private boolean disabled;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -53,14 +53,14 @@ public class User {
 
     public User() {}
 
-    public User(Long id, String username, String name, String email, String encodedPassword, Set<Profile> profiles, boolean deleted) {
+    public User(Long id, String username, String name, String email, String encodedPassword, Set<Profile> profiles, boolean disabled) {
         this.id = id;
         this.username = username;
         this.name = name;
         this.email = email;
         this.encodedPassword = encodedPassword;
         this.profiles = profiles;
-        this.deleted = deleted;
+        this.disabled = disabled;
     }
 
     public User(String username, String name, String email, String encodedPassword, Set<Profile> profiles) {
@@ -115,12 +115,12 @@ public class User {
         this.profiles = profiles;
     }
 
-    public boolean isDeleted() {
-        return deleted;
+    public boolean isDisabled() {
+        return disabled;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     public Instant getCreatedAt() {

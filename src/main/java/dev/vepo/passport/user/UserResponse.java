@@ -11,7 +11,7 @@ public record UserResponse(long id,
                            String name,
                            String email,
                            Set<ProfileInfoResponse> profiles,
-                           boolean deleted,
+                           boolean disabled,
                            Instant createdAt,
                            Instant updatedAt) {
 
@@ -24,7 +24,7 @@ public record UserResponse(long id,
                                     .stream()
                                     .map(ProfileInfoResponse::load)
                                     .collect(Collectors.toSet()),
-                                user.isDeleted(),
+                                user.isDisabled(),
                                 user.getCreatedAt(),
                                 user.getUpdatedAt());
     }

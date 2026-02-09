@@ -101,7 +101,7 @@ class ChangePasswordEndpointTest {
                                        .withUsername("deleteduser")
                                        .withEmail("deleteduser@passport.vepo.dev")
                                        .withPassword(CURRENT_PASSWORD)
-                                       .withDeleted(true)
+                                       .withDisabled(true)
                                        .persist()
                                        .authenticated();
 

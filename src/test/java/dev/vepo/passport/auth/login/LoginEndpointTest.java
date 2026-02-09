@@ -89,7 +89,7 @@ class LoginEndpointTest {
                  .withName("Deleted User")
                  .withUsername("deleted-user")
                  .withPassword(DELETED_USER_PASSWORD)
-                 .withDeleted(true)
+                 .withDisabled(true)
                  .persist();
 
             // Act & Assert

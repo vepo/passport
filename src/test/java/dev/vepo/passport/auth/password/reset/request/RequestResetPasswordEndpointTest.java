@@ -110,7 +110,7 @@ class RequestResetPasswordEndpointTest {
                  .withUsername("deleteduser")
                  .withEmail(DELETED_USER_EMAIL)
                  .withPassword("currentPassword123")
-                 .withDeleted(true)
+                 .withDisabled(true)
                  .persist();
 
             // Act & Assert - Returns OK even for deleted user

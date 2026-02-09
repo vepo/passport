@@ -37,7 +37,7 @@ public class Given {
         private String username;
         private String password;
         private Set<Profile> profiles;
-        private boolean deleted;
+        private boolean disabled;
 
         private UserBuilder() {
             this.id = null;
@@ -46,7 +46,7 @@ public class Given {
             this.username = null;
             this.password = null;
             this.profiles = new HashSet<>();
-            this.deleted = false;
+            this.disabled = false;
         }
 
         public UserBuilder withId(Long id) {
@@ -74,8 +74,8 @@ public class Given {
             return this;
         }
 
-        public UserBuilder withDeleted(boolean deleted) {
-            this.deleted = deleted;
+        public UserBuilder withDisabled(boolean disabled) {
+            this.disabled = disabled;
             return this;
         }
 
@@ -88,7 +88,7 @@ public class Given {
             Objects.requireNonNull(name, "'name' cannot be null!");
             Objects.requireNonNull(email, "'email' cannot be null!");
             Objects.requireNonNull(password, "'password' cannot be null!");
-            return new User(id, username, name, email, inject(PasswordEncoder.class).hashPassword(password), profiles, deleted);
+            return new User(id, username, name, email, inject(PasswordEncoder.class).hashPassword(password), profiles, disabled);
         }
 
         public GivenUser persist() {
@@ -109,6 +109,10 @@ public class Given {
 
         public String username() {
             return user.getUsername();
+        }
+
+        public Long id() {
+            return user.getId();
         }
     }
 

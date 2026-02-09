@@ -70,7 +70,7 @@ class CurrentUserEndpointTest {
                                .withName("Deleted User")
                                .withUsername("deleted-user")
                                .withPassword("encryptedPassword123")
-                               .withDeleted(true)
+                               .withDisabled(true)
                                .persist()
                                .authenticated();
 

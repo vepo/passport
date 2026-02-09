@@ -75,14 +75,14 @@ public class UserRepository {
     }
 
     public Optional<User> findActiveByEmail(String email) {
-        return entityManager.createQuery("FROM User WHERE email = :email AND deleted = false", User.class)
+        return entityManager.createQuery("FROM User WHERE email = :email AND disabled = false", User.class)
                             .setParameter("email", email)
                             .getResultStream()
                             .findFirst();
     }
 
     public Optional<User> findActiveByUsername(String username) {
-        return entityManager.createQuery("FROM User WHERE username = :username AND deleted = false", User.class)
+        return entityManager.createQuery("FROM User WHERE username = :username AND disabled = false", User.class)
                             .setParameter("username", username)
                             .getResultStream()
                             .findFirst();
@@ -93,7 +93,7 @@ public class UserRepository {
                                          FROM User
                                          WHERE username = :username AND
                                                encodedPassword = :encodedPassword AND
-                                               deleted = false
+                                               disabled = false
                                          """, User.class)
                             .setParameter("username", username)
                             .setParameter("encodedPassword", encodedPassword)
@@ -201,7 +201,7 @@ public class UserRepository {
                                                encodedPassword = :encodedPassword AND
                                                requestedAt > :expire_threshold AND
                                                used = false AND
-                                               user.deleted = false
+                                               user.disabled = false
                                          """, ResetPasswordToken.class)
                             .setParameter("token", token)
                             .setParameter("encodedPassword", recoveryPassword)
@@ -217,8 +217,8 @@ public class UserRepository {
                                                   Root<User> userRoot) {
         List<Predicate> predicates = new ArrayList<>();
 
-        // Always exclude deleted users
-        predicates.add(criteriaBuilder.isFalse(userRoot.get("deleted")));
+        // Always exclude disabled users
+        predicates.add(criteriaBuilder.isFalse(userRoot.get("disabled")));
 
         if (Objects.nonNull(criteria.name) && !criteria.name.isBlank()) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(userRoot.get("name")),

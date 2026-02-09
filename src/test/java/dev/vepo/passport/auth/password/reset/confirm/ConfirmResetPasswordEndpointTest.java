@@ -264,7 +264,7 @@ class ConfirmResetPasswordEndpointTest {
                                    .withUsername("deleteduser")
                                    .withEmail("deleted@passport.vepo.dev")
                                    .withPassword("oldPassword123")
-                                   .withDeleted(true)
+                                   .withDisabled(true)
                                    .persist();
 
             Given.resetPassword()

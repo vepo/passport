@@ -33,7 +33,7 @@ public class EnableUserEndpoint {
     public UserResponse update(@PathParam("userId") long userId) {
         return UserResponse.load(this.userRepository.findById(userId)
                                                     .map(user -> {
-                                                        user.setDeleted(false);
+                                                        user.setDisabled(false);
                                                         this.userRepository.save(user);
                                                         return user;
                                                     })

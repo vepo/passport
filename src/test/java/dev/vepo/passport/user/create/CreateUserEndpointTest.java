@@ -2,6 +2,7 @@ package dev.vepo.passport.user.create;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -22,8 +23,6 @@ import io.restassured.http.ContentType;
 class CreateUserEndpointTest {
 
     private static final String CREATE_USER_ENDPOINT = "/api/users";
-    private static final String ADMIN_USERNAME = "sysadmin";
-    private static final String ADMIN_PASSWORD = "qwas1234";
 
     @BeforeEach
     void cleanup() {
@@ -242,8 +241,8 @@ class CreateUserEndpointTest {
                    .post(CREATE_USER_ENDPOINT)
                    .then()
                    .statusCode(HttpStatus.SC_BAD_REQUEST)
-                   .body("violations[0].field", is("create.request.username"))
-                   .body("violations[0].message", is("must not be blank"));
+                   .body("violations.field", hasItem("create.request.username"))
+                   .body("violations.message", hasItem("must not be blank"));
         }
 
         @Test
