@@ -95,7 +95,7 @@ public class CreateUserEndpoint {
     }
 
     private Set<Profile> loadProfiles(Set<Long> profileIds) {
-        var profiles = profileRepository.loadByIds(profileIds);
+        var profiles = profileRepository.findByIds(profileIds);
         if (profiles.size() != profileIds.size()) {
             throwProfileNotFoundException(profileIds, profiles);
         }

@@ -18,7 +18,7 @@ public class ProfileRepository {
         this.entityManager = entityManager;
     }
 
-    public Set<Profile> loadByIds(Set<Long> profileIds) {
+    public Set<Profile> findByIds(Set<Long> profileIds) {
         return this.entityManager.createQuery("FROM Profile WHERE id IN :profileIds", Profile.class)
                                  .setParameter("profileIds", profileIds)
                                  .getResultStream()
