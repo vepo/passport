@@ -6,6 +6,8 @@ import dev.vepo.passport.user.UserResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -28,7 +30,7 @@ public class FindUserByIdEndpoint {
     }
 
     @GET
-    public UserResponse findUserById(@PathParam("userId") long userId) {
+    public UserResponse findUserById(@Valid @Min(1) @PathParam("userId") long userId) {
         return userRepository.findById(userId)
                              .map(UserResponse::load)
                              .orElseThrow(() -> new NotFoundException("User not found!!! userId=%s".formatted(userId)));

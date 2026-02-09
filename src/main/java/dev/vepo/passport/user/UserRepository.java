@@ -127,9 +127,6 @@ public class UserRepository {
         try {
             entityManager.persist(user);
             return user;
-        } catch (ConstraintViolationException cve) {
-            logger.error("Failed to save user with email: {}", user.getEmail(), cve);
-            throw new RepositoryException("Failed to save user", cve);
         } catch (PersistenceException e) {
             logger.error("Failed to save user with email: {}", user.getEmail(), e);
             throw new RepositoryException("Failed to save user", e);
