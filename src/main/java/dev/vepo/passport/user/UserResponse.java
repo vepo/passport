@@ -1,20 +1,30 @@
 package dev.vepo.passport.user;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public record UserResponse(long id, String username, String name, String email, List<String> roles, boolean deleted, Instant createdAt, Instant updatedAt) {
+import dev.vepo.passport.model.User;
+
+public record UserResponse(long id,
+                           String username,
+                           String name,
+                           String email,
+                           Set<ProfileInfoResponse> profiles,
+                           boolean disabled,
+                           Instant createdAt,
+                           Instant updatedAt) {
 
     public static UserResponse load(User user) {
         return new UserResponse(user.getId(),
                                 user.getUsername(),
                                 user.getName(),
                                 user.getEmail(),
-                                user.getRoles()
+                                user.getProfiles()
                                     .stream()
-                                    .map(Role::role)
-                                    .toList(),
-                                user.isDeleted(),
+                                    .map(ProfileInfoResponse::load)
+                                    .collect(Collectors.toSet()),
+                                user.isDisabled(),
                                 user.getCreatedAt(),
                                 user.getUpdatedAt());
     }

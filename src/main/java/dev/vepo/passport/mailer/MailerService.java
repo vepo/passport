@@ -14,7 +14,9 @@ public class MailerService {
 
     private static final Logger logger = LoggerFactory.getLogger(MailerService.class);
 
-    record resetPasswordEmail(String baseUrl, UserCreatedEvent event) implements MailTemplateInstance {}
+    record userCreated(String baseUrl, UserCreatedEvent event) implements MailTemplateInstance {}
+
+    record resetTokenCreated(String baseUrl, ResetPasswordCreatedEvent event) implements MailTemplateInstance {}
 
     private final String baseUrl;
 
@@ -25,11 +27,21 @@ public class MailerService {
 
     public void userCreated(@ObservesAsync UserCreatedEvent event) {
         logger.info("Sending email to user! username={}", event.username());
-        new resetPasswordEmail(baseUrl, event).to(event.email())
-                                              .subject("[BACKOFFICE] Usuário criado!")
-                                              .send()
-                                              .subscribe()
-                                              .with(success -> logger.info("Password reset email sent to {}", event.email()),
-                                                    failure -> logger.error("Failed to send password reset email to {}", event.email(), failure));
+        new userCreated(baseUrl, event).to(event.email())
+                                       .subject("[BACKOFFICE] Usuário criado!")
+                                       .send()
+                                       .subscribe()
+                                       .with(success -> logger.info("Created user email sent to {}", event.email()),
+                                             failure -> logger.error("Failed to send created user email to {}", event.email(), failure));
+    }
+
+    public void resetTokenCreated(@ObservesAsync ResetPasswordCreatedEvent event) {
+        logger.info("Sending email to user! username={}", event.username());
+        new resetTokenCreated(baseUrl, event).to(event.email())
+                                             .subject("[BACKOFFICE] Recuperação de senha requisitado!")
+                                             .send()
+                                             .subscribe()
+                                             .with(success -> logger.info("Password reset email sent to {}", event.email()),
+                                                   failure -> logger.error("Failed to send password reset email to {}", event.email(), failure));
     }
 }
