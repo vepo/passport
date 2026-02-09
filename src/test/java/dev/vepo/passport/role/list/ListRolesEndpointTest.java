@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import dev.vepo.passport.role.RoleResponse;
 import dev.vepo.passport.shared.Given;
+import dev.vepo.passport.shared.security.RequiredRoles;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -125,7 +126,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(4))
-                   .body("name", containsInAnyOrder("admin", "ROLE_ADMINISTRATOR", "ROLE_EDITOR", "ROLE_VIEWER"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "ROLE_ADMINISTRATOR", "ROLE_EDITOR", "ROLE_VIEWER"));
         }
 
         @Test
@@ -147,7 +148,7 @@ class ListRolesEndpointTest {
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(2))
                    .body("id", hasSize(2))
-                   .body("name", containsInAnyOrder("admin", "ROLE_TEST"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "ROLE_TEST"));
         }
 
         @Test
@@ -256,7 +257,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(5))
-                   .body("name", containsInAnyOrder("admin",
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN,
                                                     "ROLE_DATA-ANALYST",
                                                     "ROLE_DEV_OPS",
                                                     "ROLE_V2.0",
@@ -280,7 +281,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(2))
-                   .body("name", containsInAnyOrder("admin", longRoleName));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, longRoleName));
         }
 
         @Test
@@ -300,7 +301,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(3))
-                   .body("name", containsInAnyOrder("admin", "ROLE DATA MANAGER", "ROLE_PROJECT LEAD"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "ROLE DATA MANAGER", "ROLE_PROJECT LEAD"));
         }
 
         @Test
@@ -321,7 +322,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(4))
-                   .body("name", containsInAnyOrder("admin", "Role_Admin", "ROLE_user", "role_guest"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "Role_Admin", "ROLE_user", "role_guest"));
         }
     }
 
@@ -353,7 +354,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(2))
-                   .body("name", containsInAnyOrder("admin", "ROLE_NEW"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "ROLE_NEW"));
 
             // Create another role
             Given.role().withName("ROLE_ANOTHER").persist();
@@ -365,7 +366,7 @@ class ListRolesEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(3))
-                   .body("name", containsInAnyOrder("admin", "ROLE_NEW", "ROLE_ANOTHER"));
+                   .body("name", containsInAnyOrder(RequiredRoles.ADMIN, "ROLE_NEW", "ROLE_ANOTHER"));
         }
 
         @Test
