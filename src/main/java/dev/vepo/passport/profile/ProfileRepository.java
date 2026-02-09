@@ -26,8 +26,8 @@ public class ProfileRepository {
     }
 
     public Optional<Profile> findByName(String name) {
-        return this.entityManager.createQuery("FROM Profile WHERE name = :name", Profile.class)
-                                 .setParameter("name", name)
+        return this.entityManager.createQuery("FROM Profile WHERE lower(name) = :name", Profile.class)
+                                 .setParameter("name", name.toLowerCase())
                                  .getResultStream()
                                  .findFirst();
     }

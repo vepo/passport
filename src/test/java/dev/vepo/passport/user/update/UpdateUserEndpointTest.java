@@ -30,6 +30,10 @@ import jakarta.inject.Inject;
 @DisplayName("Update User Endpoint")
 class UpdateUserEndpointTest {
 
+    private static final String ADMIN_PROFILE_NAME = "ADMIN PROFILE";
+    private static final String EDITOR_PROFILE_NAME = "EDITOR PROFILE";
+    private static final String USER_PROFILE_NAME = "USER PROFILE";
+
     private static final String UPDATE_USER_PATH = "/api/users/:id";
 
     @Inject
@@ -51,15 +55,15 @@ class UpdateUserEndpointTest {
 
         // Create profiles
         userProfile = Given.profile()
-                           .withName("USER")
+                           .withName(USER_PROFILE_NAME)
                            .persist();
 
         editorProfile = Given.profile()
-                             .withName("EDITOR")
+                             .withName(EDITOR_PROFILE_NAME)
                              .persist();
 
         adminProfile = Given.profile()
-                            .withName("ADMIN")
+                            .withName(ADMIN_PROFILE_NAME)
                             .persist();
 
         // Create users
@@ -87,8 +91,7 @@ class UpdateUserEndpointTest {
     void updateUser_ValidRequest_ShouldUpdateSuccessfully() {
         // Given
         long userId = regularUser.id();
-        var updateRequest = new UpdateUserRequest(
-                                                  "Updated Name",
+        var updateRequest = new UpdateUserRequest("Updated Name",
                                                   "updated@example.com",
                                                   Set.of(userProfile.getId(), editorProfile.getId()));
 
@@ -105,7 +108,7 @@ class UpdateUserEndpointTest {
                .body("name", is("Updated Name"))
                .body("email", is("updated@example.com"))
                .body("disabled", is(false))
-               .body("profiles.name", hasItems("USER", "EDITOR"));
+               .body("profiles.name", hasItems(USER_PROFILE_NAME, EDITOR_PROFILE_NAME));
 
         // Verify database state
         var updatedUser = userRepository.findById(userId).orElseThrow();
@@ -113,7 +116,7 @@ class UpdateUserEndpointTest {
         assertThat(updatedUser.getEmail()).isEqualTo("updated@example.com");
         assertThat(updatedUser.getProfiles()).hasSize(2);
         assertThat(updatedUser.getProfiles().stream().map(Profile::getName))
-                                                                            .containsExactlyInAnyOrder("USER", "EDITOR");
+                                                                            .containsExactlyInAnyOrder(USER_PROFILE_NAME, EDITOR_PROFILE_NAME);
     }
 
     @Test
@@ -168,8 +171,7 @@ class UpdateUserEndpointTest {
                                     .persist();
 
         long userId = userWithProfiles.id();
-        var updateRequest = new UpdateUserRequest(
-                                                  "Updated Name",
+        var updateRequest = new UpdateUserRequest("Updated Name",
                                                   "updated@example.com",
                                                   Set.of() // Empty set
         );
@@ -300,8 +302,7 @@ class UpdateUserEndpointTest {
     @DisplayName("PUT /users/{userId} - admin should be able to update themselves")
     void updateUser_AdminUpdatingSelf_ShouldUpdateSuccessfully() {
         long adminId = admin.id();
-        var updateRequest = new UpdateUserRequest(
-                                                  "Updated Admin Name",
+        var updateRequest = new UpdateUserRequest("Updated Admin Name",
                                                   "admin.updated@example.com",
                                                   Set.of(adminProfile.getId()));
 
@@ -596,8 +597,7 @@ class UpdateUserEndpointTest {
             long userId = regularUser.id();
 
             // Try to update to same email but different case
-            var updateRequest = new UpdateUserRequest(
-                                                      "Updated Name",
+            var updateRequest = new UpdateUserRequest("Updated Name",
                                                       "TEST@EXAMPLE.COM", // Same email, different case
                                                       Set.of(userProfile.getId()));
 
@@ -625,8 +625,7 @@ class UpdateUserEndpointTest {
                                     .persist();
 
             long userId = disabledUser.id();
-            var updateRequest = new UpdateUserRequest(
-                                                      "Enabled User Name",
+            var updateRequest = new UpdateUserRequest("Enabled User Name",
                                                       "enabled@example.com",
                                                       Set.of(userProfile.getId()));
 
@@ -646,8 +645,7 @@ class UpdateUserEndpointTest {
         @DisplayName("PUT /users/{userId} - should preserve username even when updating other fields")
         void updateUser_ShouldNotChangeUsername() {
             long userId = regularUser.id();
-            var updateRequest = new UpdateUserRequest(
-                                                      "Completely New Name",
+            var updateRequest = new UpdateUserRequest("Completely New Name",
                                                       "completely.new@example.com",
                                                       Set.of(editorProfile.getId()));
 
@@ -669,8 +667,7 @@ class UpdateUserEndpointTest {
             long userId = regularUser.id();
 
             // First update: Add EDITOR profile
-            var firstUpdate = new UpdateUserRequest(
-                                                    "First Update",
+            var firstUpdate = new UpdateUserRequest("First Update",
                                                     "first@example.com",
                                                     Set.of(userProfile.getId(), editorProfile.getId()));
 
@@ -697,12 +694,12 @@ class UpdateUserEndpointTest {
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("profiles.size()", is(1))
-                   .body("profiles[0].name", is("USER"));
+                   .body("profiles[0].name", is(USER_PROFILE_NAME));
 
             // Verify final state
             var finalUser = userRepository.findById(userId).orElseThrow();
             assertThat(finalUser.getProfiles()).hasSize(1);
-            assertThat(finalUser.getProfiles().iterator().next().getName()).isEqualTo("USER");
+            assertThat(finalUser.getProfiles()).extracting(Profile::getName).containsExactly(USER_PROFILE_NAME);
             assertThat(finalUser.getName()).isEqualTo("Second Update");
             assertThat(finalUser.getEmail()).isEqualTo("second@example.com");
         }
