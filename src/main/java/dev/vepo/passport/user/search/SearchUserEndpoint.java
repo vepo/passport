@@ -40,6 +40,7 @@ public class SearchUserEndpoint {
                              .profileIds(profiles)
                              .roleIds(roles)
                              .execute()
+                             .stream()
                              .map(UserResponse::load)
                              .toList();
     }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.validation.ConstraintViolationException;
 
 @ApplicationScoped
 public class UserRepository {
@@ -52,7 +50,7 @@ public class UserRepository {
             return this;
         }
 
-        public Stream<User> execute() {
+        public List<User> execute() {
             return search(this);
         }
     }
@@ -148,7 +146,7 @@ public class UserRepository {
         return new UserSearchCriteria();
     }
 
-    public Stream<User> search(UserSearchCriteria criteria) {
+    public List<User> search(UserSearchCriteria criteria) {
         logger.info("Searching for users...");
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
@@ -163,7 +161,9 @@ public class UserRepository {
         criteriaQuery.orderBy(criteriaBuilder.asc(userRoot.get("name")));
 
         try {
-            return entityManager.createQuery(criteriaQuery).getResultStream();
+            return entityManager.createQuery(criteriaQuery)
+                                .getResultStream()
+                                .toList();
         } catch (PersistenceException e) {
             logger.error("Failed to execute user search with criteria: {}", criteria, e);
             throw new RepositoryException("Failed to search users", e);
@@ -212,12 +212,12 @@ public class UserRepository {
 
         if (Objects.nonNull(criteria.name) && !criteria.name.isBlank()) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(userRoot.get("name")),
-                                                "%%%s%%".formatted(criteria.name)));
+                                                "%%%s%%".formatted(criteria.name.toLowerCase())));
         }
 
         if (Objects.nonNull(criteria.email) && !criteria.email.isBlank()) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(userRoot.get("email")),
-                                                "%%%s%%".formatted(criteria.email)));
+                                                "%%%s%%".formatted(criteria.email.toLowerCase())));
         }
 
         if (Objects.nonNull(criteria.profileIds) && !criteria.profileIds.isEmpty()) {

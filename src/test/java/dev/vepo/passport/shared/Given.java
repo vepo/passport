@@ -88,13 +88,6 @@ public class Given {
             return new Header("Authorization", "Bearer %s".formatted(inject(JwtGenerator.class).generate(build())));
         }
 
-        private Set<Profile> asProfiles() {
-            return this.profiles.stream()
-                                .map(profile -> inject(ProfileRepository.class).findByName(profile)
-                                                                               .orElseGet(() -> inject(ProfileRepository.class).save(new Profile(profile))))
-                                .collect(Collectors.toSet());
-        }
-
         public User build() {
             Objects.requireNonNull(username, "'username' cannot be null!");
             Objects.requireNonNull(name, "'name' cannot be null!");
@@ -105,6 +98,13 @@ public class Given {
 
         public GivenUser persist() {
             return new GivenUser(withTransaction(() -> inject(UserRepository.class).save(build())));
+        }
+
+        private Set<Profile> asProfiles() {
+            return this.profiles.stream()
+                                .map(profile -> inject(ProfileRepository.class).findByName(profile)
+                                                                               .orElseGet(() -> inject(ProfileRepository.class).save(new Profile(profile))))
+                                .collect(Collectors.toSet());
         }
     }
 
@@ -208,6 +208,10 @@ public class Given {
             return this;
         }
 
+        public Profile persist() {
+            return withTransaction(() -> inject(ProfileRepository.class).save(new Profile(name, asRoles())));
+        }
+
         private Set<Role> asRoles() {
             var roleRepository = inject(RoleRepository.class);
             return this.roles.stream()
@@ -215,9 +219,22 @@ public class Given {
                                                         .orElseGet(() -> roleRepository.save(new Role(role))))
                              .collect(Collectors.toSet());
         }
+    }
 
-        public Profile persist() {
-            return withTransaction(() -> inject(ProfileRepository.class).save(new Profile(name, asRoles())));
+    public static class RoleBuilder {
+        private String name;
+
+        private RoleBuilder() {
+            this.name = null;
+        }
+
+        public RoleBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Role persist() {
+            return withTransaction(() -> inject(RoleRepository.class).save(new Role(name)));
         }
     }
 
@@ -233,6 +250,10 @@ public class Given {
 
     public static ProfileBuilder profile() {
         return new ProfileBuilder();
+    }
+
+    public static RoleBuilder role() {
+        return new RoleBuilder();
     }
 
     public static GivenUser user(String email) {
