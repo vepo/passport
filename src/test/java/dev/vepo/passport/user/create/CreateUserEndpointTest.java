@@ -1,6 +1,7 @@
 package dev.vepo.passport.user.create;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -123,8 +124,7 @@ class CreateUserEndpointTest {
                    .body("name", is("John Doe"))
                    .body("email", is("john.doe@example.com"))
                    .body("profiles.size()", is(2))
-                   .body("profiles[0].name", is("Profile 1"))
-                   .body("profiles[1].name", is("Profile 2"))
+                   .body("profiles.name", containsInAnyOrder("Profile 1", "Profile 2"))
                    .body("disabled", is(false));
         }
 

@@ -39,7 +39,7 @@ class CreateProfileEndpointTest {
         void createProfile_WithoutAuthentication_ReturnsUnauthorized() {
             // Create a role first
             var role = Given.role().withName("ROLE_USER").persist();
-            
+
             given().contentType(ContentType.JSON)
                    .body(createProfileRequest("Test Profile", Set.of(role.getId())))
                    .when()
@@ -111,7 +111,7 @@ class CreateProfileEndpointTest {
             // Act & Assert
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
-                   .body(createProfileRequest("Editor Profile", 
+                   .body(createProfileRequest("Editor Profile",
                                               Set.of(role1.getId(), role2.getId())))
                    .when()
                    .post(CREATE_PROFILE_ENDPOINT)
@@ -202,7 +202,7 @@ class CreateProfileEndpointTest {
             // Act & Assert
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
-                   .body(createProfileRequest("CRUD Profile", 
+                   .body(createProfileRequest("CRUD Profile",
                                               Set.of(role1.getId(), role2.getId(), role3.getId(), role4.getId())))
                    .when()
                    .post(CREATE_PROFILE_ENDPOINT)
@@ -394,7 +394,7 @@ class CreateProfileEndpointTest {
             // Act & Assert
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
-                   .body(createProfileRequest("Test Profile", 
+                   .body(createProfileRequest("Test Profile",
                                               Set.of(validRole.getId(), invalidRoleId)))
                    .when()
                    .post(CREATE_PROFILE_ENDPOINT)
@@ -426,7 +426,7 @@ class CreateProfileEndpointTest {
                    .post(CREATE_PROFILE_ENDPOINT)
                    .then()
                    .statusCode(HttpStatus.SC_CONFLICT)
-                   .body("message",equalTo("Profile with name 'ExistingProfile' already exists"));
+                   .body("message", equalTo("Profile with name 'ExistingProfile' already exists"));
         }
 
         @Test
@@ -539,8 +539,8 @@ class CreateProfileEndpointTest {
             Long[] roleIds = new Long[5];
             for (int i = 0; i < 5; i++) {
                 var role = Given.role()
-                               .withName("ROLE_PERMISSION_" + i)
-                               .persist();
+                                .withName("ROLE_PERMISSION_" + i)
+                                .persist();
                 roleIds[i] = role.getId();
             }
 
@@ -569,7 +569,7 @@ class CreateProfileEndpointTest {
             // Act & Assert
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
-                   .body(createProfileRequest("Mixed Case Profile", 
+                   .body(createProfileRequest("Mixed Case Profile",
                                               Set.of(role1.getId(), role2.getId(), role3.getId())))
                    .when()
                    .post(CREATE_PROFILE_ENDPOINT)
@@ -604,7 +604,8 @@ class CreateProfileEndpointTest {
                    .body("name", is("Integration Profile"));
 
             // Find the profile (need to get the ID somehow)
-            // Since we don't get the ID back easily in this test, we'll verify through other means
+            // Since we don't get the ID back easily in this test, we'll verify through
+            // other means
             // In a real scenario, you'd extract the ID from the response and use it
         }
 
@@ -685,7 +686,7 @@ class CreateProfileEndpointTest {
                    }
                    """.formatted(name);
         }
-        
+
         String roleIdsArray = roleIds.stream()
                                      .map(String::valueOf)
                                      .reduce((a, b) -> a + ", " + b)

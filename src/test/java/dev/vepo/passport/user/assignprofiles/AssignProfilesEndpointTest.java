@@ -173,7 +173,7 @@ class AssignProfilesEndpointTest {
                    .statusCode(HttpStatus.SC_OK)
                    .body("id", is(targetUser.id().intValue()))
                    .body("profiles", hasSize(2))
-                   .body("profiles.name", containsInAnyOrder( "Editor", "Viewer"));
+                   .body("profiles.name", containsInAnyOrder("Editor", "Viewer"));
         }
 
         @Test
@@ -447,7 +447,8 @@ class AssignProfilesEndpointTest {
             // Create a profile
             var profile = Given.profile().withName("TestProfile").persist();
 
-            // Act & Assert - Duplicate IDs in request should still work (Set eliminates duplicates)
+            // Act & Assert - Duplicate IDs in request should still work (Set eliminates
+            // duplicates)
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
                    .body("""
@@ -607,7 +608,7 @@ class AssignProfilesEndpointTest {
                    }
                    """;
         }
-        
+
         String profileIdsArray = profileIds.stream()
                                            .map(String::valueOf)
                                            .reduce((a, b) -> a + ", " + b)

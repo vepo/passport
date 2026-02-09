@@ -4,7 +4,4 @@ import java.util.Set;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public record AssignProfilesRequest(
-    @NotEmpty(message = "At least one profile must be assigned")
-    Set<Long> profileIds
-) {}
+public record AssignProfilesRequest(@NotEmpty(message = "At least one profile must be assigned") Set<Long> profileIds) {}

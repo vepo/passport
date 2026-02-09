@@ -38,13 +38,11 @@ public class CreateRoleEndpoint {
     public RoleResponse create(@Valid CreateRoleRequest request) {
         // Check for existing role with same name
         roleRepository.findByName(request.name())
-                     .ifPresent(existingRole -> {
-                         throw new WebApplicationException(
-                             "Role with name '%s' already exists".formatted(request.name()),
-                             Status.CONFLICT
-                         );
-                     });
-        
+                      .ifPresent(existingRole -> {
+                          throw new WebApplicationException("Role with name '%s' already exists".formatted(request.name()),
+                                                            Status.CONFLICT);
+                      });
+
         Role role = roleRepository.save(new Role(request.name()));
         return RoleResponse.from(role);
     }

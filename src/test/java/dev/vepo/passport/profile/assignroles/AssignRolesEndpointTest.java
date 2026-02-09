@@ -371,7 +371,8 @@ class AssignRolesEndpointTest {
             // Create a role
             var role = Given.role().withName("ROLE_DUPLICATE").persist();
 
-            // Act & Assert - Duplicate IDs in request should still work (Set eliminates duplicates)
+            // Act & Assert - Duplicate IDs in request should still work (Set eliminates
+            // duplicates)
             given().header(admin.authenticated())
                    .contentType(ContentType.JSON)
                    .body("""
@@ -402,8 +403,8 @@ class AssignRolesEndpointTest {
             Long[] roleIds = new Long[8];
             for (int i = 0; i < 8; i++) {
                 var role = Given.role()
-                               .withName("ROLE_PERMISSION_" + i)
-                               .persist();
+                                .withName("ROLE_PERMISSION_" + i)
+                                .persist();
                 roleIds[i] = role.getId();
             }
 
@@ -679,7 +680,7 @@ class AssignRolesEndpointTest {
                    }
                    """;
         }
-        
+
         String roleIdsArray = roleIds.stream()
                                      .map(String::valueOf)
                                      .reduce((a, b) -> a + ", " + b)
