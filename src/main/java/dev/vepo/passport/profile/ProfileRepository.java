@@ -36,4 +36,11 @@ public class ProfileRepository {
         this.entityManager.persist(profile);
         return profile;
     }
+
+    public Optional<Profile> findById(Long id) {
+        return entityManager.createQuery("FROM Profile WHERE id = :id", Profile.class)
+                            .setParameter("id", id)
+                            .getResultStream()
+                            .findFirst();
+    }
 }

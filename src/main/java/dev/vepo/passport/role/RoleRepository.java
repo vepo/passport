@@ -2,6 +2,8 @@ package dev.vepo.passport.role;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import dev.vepo.passport.model.Role;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,6 +24,13 @@ public class RoleRepository {
                             .setParameter("name", name.toLowerCase())
                             .getResultStream()
                             .findFirst();
+    }
+
+    public Set<Role> findByIds(Set<Long> roleIds) {
+        return this.entityManager.createQuery("FROM Role WHERE id IN :roleIds", Role.class)
+                                 .setParameter("roleIds", roleIds)
+                                 .getResultStream()
+                                 .collect(Collectors.toSet());
     }
 
     public List<Role> findAll() {

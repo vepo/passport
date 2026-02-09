@@ -4,4 +4,4 @@ import java.util.Set;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public record AssignRolesToProfileRequest(@NotEmpty Set<Long> roleIds) {}
+public record AssignRolesRequest(@NotEmpty(message = "At least one role must be assigned") Set<Long> roleIds) {}
