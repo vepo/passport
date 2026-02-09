@@ -60,12 +60,12 @@ class RequestResetPasswordEndpointTest {
         @DisplayName("Should create new token when no active token exists")
         void requestReset_WithNoExistingToken_CreatesNewToken() {
             // Arrange
-            var user = Given.user()
-                            .withName("No Token User")
-                            .withUsername("notokenuser")
-                            .withEmail(VALID_EMAIL)
-                            .withPassword("currentPassword123")
-                            .persist();
+            Given.user()
+                 .withName("No Token User")
+                 .withUsername("notokenuser")
+                 .withEmail(VALID_EMAIL)
+                 .withPassword("currentPassword123")
+                 .persist();
 
             // Act
             given().contentType(ContentType.JSON)

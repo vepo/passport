@@ -154,14 +154,6 @@ class ConfirmResetPasswordEndpointTest {
         @Test
         @DisplayName("Should return NOT_FOUND with invalid token")
         void resetPassword_WithInvalidToken_ReturnsNotFound() {
-            // Arrange - Create user but no reset token
-            var user = Given.user()
-                            .withName("Invalid Token Test")
-                            .withUsername("invalidtoken")
-                            .withEmail("invalidtoken@passport.vepo.dev")
-                            .withPassword("oldPassword123")
-                            .persist();
-
             // Act & Assert
             given().contentType(ContentType.JSON)
                    .body(resetPasswordRequest(INVALID_TOKEN, RECOVERY_PASSWORD, NEW_PASSWORD))
