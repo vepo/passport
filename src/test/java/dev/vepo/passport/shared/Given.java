@@ -36,7 +36,7 @@ public class Given {
         private String name;
         private String username;
         private String password;
-        private Set<Profile> profiles;
+        private Set<String> profiles;
         private boolean disabled;
 
         private UserBuilder() {
@@ -79,8 +79,20 @@ public class Given {
             return this;
         }
 
+        public UserBuilder withProfile(String profile) {
+            this.profiles.add(profile);
+            return this;
+        }
+
         public Header authenticated() {
             return new Header("Authorization", "Bearer %s".formatted(inject(JwtGenerator.class).generate(build())));
+        }
+
+        private Set<Profile> asProfiles() {
+            return this.profiles.stream()
+                                .map(profile -> inject(ProfileRepository.class).findByName(profile)
+                                                                               .orElseGet(() -> inject(ProfileRepository.class).save(new Profile(profile))))
+                                .collect(Collectors.toSet());
         }
 
         public User build() {
@@ -88,7 +100,7 @@ public class Given {
             Objects.requireNonNull(name, "'name' cannot be null!");
             Objects.requireNonNull(email, "'email' cannot be null!");
             Objects.requireNonNull(password, "'password' cannot be null!");
-            return new User(id, username, name, email, inject(PasswordEncoder.class).hashPassword(password), profiles, disabled);
+            return new User(id, username, name, email, inject(PasswordEncoder.class).hashPassword(password), asProfiles(), disabled);
         }
 
         public GivenUser persist() {
@@ -113,6 +125,18 @@ public class Given {
 
         public Long id() {
             return user.getId();
+        }
+
+        public String email() {
+            return user.getEmail();
+        }
+
+        public String name() {
+            return user.getName();
+        }
+
+        public User user() {
+            return this.user;
         }
     }
 
@@ -228,6 +252,11 @@ public class Given {
         return new GivenUser(user);
     }
 
+    public static GivenUser user(long userId) {
+        inject(EntityManager.class).clear(); // avoid using cache
+        return new GivenUser(inject(UserRepository.class).findById(userId).orElseThrow());
+    }
+
     public static void withTransaction(Runnable block) {
         if (QuarkusTransaction.getStatus() == Status.STATUS_ACTIVE) {
             block.run();
@@ -288,4 +317,7 @@ public class Given {
                                                                                                                                            Set.of(adminProfile()))))));
     }
 
+    public static void clearDatabaseCache() {
+        inject(EntityManager.class).clear();
+    }
 }

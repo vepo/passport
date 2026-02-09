@@ -125,15 +125,8 @@ public class UserRepository {
 
     public User save(User user) {
         try {
-            if (Objects.isNull(user.getId())) {
-                entityManager.persist(user);
-                logger.debug("Persisted new user with email: {}", user.getEmail());
-                return user;
-            } else {
-                User merged = entityManager.merge(user);
-                logger.debug("Updated existing user with ID: {}", user.getId());
-                return merged;
-            }
+            entityManager.persist(user);
+            return user;
         } catch (ConstraintViolationException cve) {
             logger.error("Failed to save user with email: {}", user.getEmail(), cve);
             throw new RepositoryException("Failed to save user", cve);

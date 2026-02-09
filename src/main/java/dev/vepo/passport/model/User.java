@@ -157,6 +157,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User[id=%d, username=%s, name=%s, email=%s, profiles=%s]".formatted(id, username, name, email, profiles);
+        return "User[id=%d, username=%s, name=%s, email=%s, profiles=%s, disabled=%b]".formatted(id, username, name, email, profiles, disabled);
     }
 }

@@ -125,7 +125,7 @@ class CreateUserEndpointTest {
                    .body("profiles.size()", is(2))
                    .body("profiles[0].name", is("Profile 1"))
                    .body("profiles[1].name", is("Profile 2"))
-                   .body("deleted", is(false));
+                   .body("disabled", is(false));
         }
 
         @Test

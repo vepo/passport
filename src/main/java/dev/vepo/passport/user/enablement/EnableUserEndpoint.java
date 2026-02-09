@@ -1,5 +1,8 @@
 package dev.vepo.passport.user.enablement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dev.vepo.passport.shared.security.RequiredRoles;
 import dev.vepo.passport.user.UserRepository;
 import dev.vepo.passport.user.UserResponse;
@@ -21,6 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class EnableUserEndpoint {
+    private static final Logger logger = LoggerFactory.getLogger(EnableUserEndpoint.class);
     private final UserRepository userRepository;
 
     @Inject
@@ -33,6 +37,7 @@ public class EnableUserEndpoint {
     public UserResponse update(@PathParam("userId") long userId) {
         return UserResponse.load(this.userRepository.findById(userId)
                                                     .map(user -> {
+                                                        logger.info("Enabling user={}", user);
                                                         user.setDisabled(false);
                                                         this.userRepository.save(user);
                                                         return user;
