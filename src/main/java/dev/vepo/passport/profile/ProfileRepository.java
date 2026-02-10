@@ -18,6 +18,12 @@ public class ProfileRepository {
         this.entityManager = entityManager;
     }
 
+    public Set<Profile> findAll() {
+        return this.entityManager.createQuery("FROM Profile", Profile.class)
+                                 .getResultStream()
+                                 .collect(Collectors.toSet());
+    }
+
     public Set<Profile> findByIds(Set<Long> profileIds) {
         return this.entityManager.createQuery("FROM Profile WHERE id IN :profileIds", Profile.class)
                                  .setParameter("profileIds", profileIds)
