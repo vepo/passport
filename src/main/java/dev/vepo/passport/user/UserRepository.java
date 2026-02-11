@@ -29,6 +29,7 @@ public class UserRepository {
         private String email;
         private List<Long> profileIds;
         private List<Long> roleIds;
+        private Boolean disabled;
 
         public UserSearchCriteria name(String name) {
             this.name = name;
@@ -47,6 +48,11 @@ public class UserRepository {
 
         public UserSearchCriteria roleIds(List<Long> roleIds) {
             this.roleIds = roleIds;
+            return this;
+        }
+
+        public UserSearchCriteria disabled(Boolean disabled) {
+            this.disabled = disabled;
             return this;
         }
 
@@ -208,7 +214,13 @@ public class UserRepository {
         List<Predicate> predicates = new ArrayList<>();
 
         // Always exclude disabled users
-        predicates.add(criteriaBuilder.isFalse(userRoot.get("disabled")));
+        if (Objects.nonNull(criteria.disabled)) {
+            if (criteria.disabled) {
+                predicates.add(criteriaBuilder.isTrue(userRoot.get("disabled")));
+            } else {
+                predicates.add(criteriaBuilder.isFalse(userRoot.get("disabled")));
+            }
+        }
 
         if (Objects.nonNull(criteria.name) && !criteria.name.isBlank()) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(userRoot.get("name")),

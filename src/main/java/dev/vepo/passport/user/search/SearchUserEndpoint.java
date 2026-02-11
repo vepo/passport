@@ -33,12 +33,14 @@ public class SearchUserEndpoint {
     public List<UserResponse> search(@QueryParam("name") String name,
                                      @QueryParam("email") String email,
                                      @QueryParam("profiles") List<Long> profiles,
-                                     @QueryParam("roles") List<Long> roles) {
+                                     @QueryParam("roles") List<Long> roles,
+                                     @QueryParam("disabled") Boolean disabled) {
         return userRepository.search()
                              .name(name)
                              .email(email)
                              .profileIds(profiles)
                              .roleIds(roles)
+                             .disabled(disabled)
                              .execute()
                              .stream()
                              .map(UserResponse::load)

@@ -19,13 +19,13 @@ BEGIN
 
     -- -- Usuário sem roles (se aplicável)
     INSERT INTO tb_users (username, name, email, encoded_password) VALUES 
-                         ('guest-user', 'Guest User', 'guest@morpho-board.ui', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
+                         ('guest-user', 'Guest User', 'guest@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
     -- Combinação ADMIN + PROJECT_MANAGER + USER (Super Usuário)
     INSERT INTO tb_users (username, name, email, encoded_password) VALUES 
-                         ('cto-boss', 'Chief Technology Officer', 'cto@morpho-board.ui', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
+                         ('cto-boss', 'Chief Technology Officer', 'cto@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
     -- Usuário com apenas a role USER
     INSERT INTO tb_users (username, name, email, encoded_password) VALUES 
-                         ('junior', 'Junior Developer', 'junior_dev@morpho-board.ui', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
+                         ('junior', 'Junior Developer', 'junior_dev@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==');
 
     INSERT INTO tb_users_profiles (user_id, profile_id) 
     VALUES ((SELECT id FROM tb_users WHERE username = 'cto-boss'),

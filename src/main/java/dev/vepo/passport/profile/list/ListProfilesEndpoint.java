@@ -31,8 +31,8 @@ public class ListProfilesEndpoint {
     public List<ProfileResponse> list() {
         // Check for existing role with same name
         return this.profileRepository.findAll()
-                                  .stream()
-                                  .map(ProfileResponse::from)
-                                  .toList();
+                                     .stream()
+                                     .map(ProfileResponse::from)
+                                     .toList();
     }
 }
