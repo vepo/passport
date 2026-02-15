@@ -1,5 +1,7 @@
 package dev.vepo.passport.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,5 +39,26 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj == null || obj.getClass() != getClass()) {
+            return false;
+        }
+        var other = (Role) obj;
+        return Objects.equals(id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        return "Role[id=%d, name=%s]".formatted(id, name);
     }
 }

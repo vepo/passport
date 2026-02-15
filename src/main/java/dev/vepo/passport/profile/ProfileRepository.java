@@ -120,25 +120,25 @@ public class ProfileRepository {
     private List<Predicate> buildSearchPredicates(ProfileSearchCriteria criteria,
                                                   CriteriaBuilder criteriaBuilder,
                                                   CriteriaQuery<Profile> criteriaQuery,
-                                                  Root<Profile> userRoot) {
+                                                  Root<Profile> profileRoot) {
         var predicates = new ArrayList<Predicate>();
 
         // Always exclude disabled users
         if (Objects.nonNull(criteria.disabled)) {
             if (criteria.disabled) {
-                predicates.add(criteriaBuilder.isTrue(userRoot.get("disabled")));
+                predicates.add(criteriaBuilder.isTrue(profileRoot.get("disabled")));
             } else {
-                predicates.add(criteriaBuilder.isFalse(userRoot.get("disabled")));
+                predicates.add(criteriaBuilder.isFalse(profileRoot.get("disabled")));
             }
         }
 
         if (Objects.nonNull(criteria.name) && !criteria.name.isBlank()) {
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(userRoot.get("name")),
+            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(profileRoot.get("name")),
                                                 "%%%s%%".formatted(criteria.name.toLowerCase())));
         }
 
         if (Objects.nonNull(criteria.roleIds) && !criteria.roleIds.isEmpty()) {
-            predicates.add(createRolePredicate(criteria, criteriaBuilder, criteriaQuery, userRoot));
+            predicates.add(createRolePredicate(criteria, criteriaBuilder, criteriaQuery, profileRoot));
         }
 
         return predicates;
