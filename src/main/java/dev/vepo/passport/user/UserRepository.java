@@ -31,6 +31,14 @@ public class UserRepository {
         private List<Long> roleIds;
         private Boolean disabled;
 
+        public UserSearchCriteria() {
+            this.name = null;
+            this.email = null;
+            this.profileIds = null;
+            this.roleIds = null;
+            this.disabled = null;
+        }
+
         public UserSearchCriteria name(String name) {
             this.name = name;
             return this;
@@ -58,6 +66,11 @@ public class UserRepository {
 
         public List<User> execute() {
             return search(this);
+        }
+
+        @Override
+        public String toString() {
+            return "UserSearchCriteria[name=%s, email=%s, profileIds=%s, roleIds=%s, disabled=%s]".formatted(name, email, profileIds, roleIds, disabled);
         }
     }
 
@@ -153,7 +166,7 @@ public class UserRepository {
     }
 
     public List<User> search(UserSearchCriteria criteria) {
-        logger.info("Searching for users...");
+        logger.info("Searching for users... criteria={}", criteria);
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
         Root<User> userRoot = criteriaQuery.from(User.class);

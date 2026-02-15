@@ -29,6 +29,8 @@ public class Profile {
     @JoinTable(name = "tb_profile_roles", joinColumns = @JoinColumn(name = "profile_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    private boolean disabled;
+
     public Profile() {}
 
     public Profile(String name) {
@@ -38,6 +40,7 @@ public class Profile {
     public Profile(String name, Set<Role> roles) {
         this.name = name;
         this.roles = roles;
+        this.disabled = false;
     }
 
     public Long getId() {
@@ -64,6 +67,14 @@ public class Profile {
         this.roles = roles;
     }
 
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(this.id);
@@ -82,6 +93,6 @@ public class Profile {
 
     @Override
     public String toString() {
-        return "Profile[id=%d, name=%s, roles=%s]".formatted(id, name, roles);
+        return "Profile[id=%d, name=%s, roles=%s, disabled=%b]".formatted(id, name, roles, disabled);
     }
 }

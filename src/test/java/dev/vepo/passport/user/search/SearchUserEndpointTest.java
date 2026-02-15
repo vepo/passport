@@ -116,9 +116,10 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should return all active users when admin with no filters")
+    @DisplayName("GET /users/search - should return all active users when admin with no filters (disabled=false default)")
     void searchUsers_NoFilters_ShouldReturnAllActiveUsers() {
         given().header(admin.authenticated())
+               .queryParam("disabled", false) // Explicitly request active users
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -133,10 +134,40 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by name")
-    void searchUsers_ByName_ShouldReturnMatchingUsers() {
+    @DisplayName("GET /users/search - should return all users including disabled when disabled=true")
+    void searchUsers_IncludeDisabled_ShouldReturnAllUsers() {
+        given().header(admin.authenticated())
+               .queryParam("disabled", true)
+               .when()
+               .get(SEARCH_USERS_PATH)
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("$", hasSize(1)) // disabledUser
+               .body("username", hasItems(disabledUser.username()))
+               .body("findAll { it.disabled == true }", hasSize(1)); // One disabled user
+    }
+
+    @Test
+    @DisplayName("GET /users/search - should return only disabled users when disabled=true and other filters match")
+    void searchUsers_OnlyDisabled_ShouldReturnDisabledUsers() {
+        given().header(admin.authenticated())
+               .queryParam("disabled", true)
+               .queryParam("name", "Inactive")
+               .when()
+               .get(SEARCH_USERS_PATH)
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("$", hasSize(1))
+               .body("[0].username", is(disabledUser.username()))
+               .body("[0].disabled", is(true));
+    }
+
+    @Test
+    @DisplayName("GET /users/search - should search by name (active users only by default)")
+    void searchUsers_ByName_ShouldReturnMatchingActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("name", "John")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -147,10 +178,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by email")
-    void searchUsers_ByEmail_ShouldReturnMatchingUsers() {
+    @DisplayName("GET /users/search - should search by email (active users only by default)")
+    void searchUsers_ByEmail_ShouldReturnMatchingActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("email", "example.com")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -160,10 +192,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by specific email")
-    void searchUsers_BySpecificEmail_ShouldReturnSingleUser() {
+    @DisplayName("GET /users/search - should search by specific email (active users only by default)")
+    void searchUsers_BySpecificEmail_ShouldReturnSingleActiveUser() {
         given().header(admin.authenticated())
                .queryParam("email", "jane.smith@example.com")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -174,28 +207,30 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by profile IDs")
-    void searchUsers_ByProfileIds_ShouldReturnUsersWithProfiles() {
+    @DisplayName("GET /users/search - should search by profile IDs (active users only by default)")
+    void searchUsers_ByProfileIds_ShouldReturnActiveUsersWithProfiles() {
         Long userProfileId = userProfile.getId();
 
         given().header(admin.authenticated())
                .queryParam("profiles", userProfileId)
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
                .statusCode(HttpStatus.SC_OK)
-               .body("$", hasSize(2)) // user1, user3, admin (has ADMIN profile which might include USER role)
+               .body("$", hasSize(2)) // user1, user3
                .body("username", hasItems(user1.username(), user3.username()));
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by multiple profile IDs")
-    void searchUsers_ByMultipleProfileIds_ShouldReturnUsersWithAnyProfile() {
+    @DisplayName("GET /users/search - should search by multiple profile IDs (active users only by default)")
+    void searchUsers_ByMultipleProfileIds_ShouldReturnActiveUsersWithAnyProfile() {
         Long userProfileId = userProfile.getId();
         Long editorProfileId = editorProfile.getId();
 
         given().header(admin.authenticated())
                .queryParam("profiles", userProfileId, editorProfileId)
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -205,12 +240,13 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should search by role IDs")
-    void searchUsers_ByRoleIds_ShouldReturnUsersWithRoles() {
+    @DisplayName("GET /users/search - should search by role IDs (active users only by default)")
+    void searchUsers_ByRoleIds_ShouldReturnActiveUsersWithRoles() {
         Long userRoleId = userRole.getId();
 
         given().header(admin.authenticated())
                .queryParam("roles", userRoleId)
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -220,11 +256,12 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should combine multiple search criteria")
-    void searchUsers_WithMultipleCriteria_ShouldReturnIntersection() {
+    @DisplayName("GET /users/search - should combine multiple search criteria (active users only by default)")
+    void searchUsers_WithMultipleCriteria_ShouldReturnIntersectionOfActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("name", "John")
                .queryParam("profiles", userProfile.getId())
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -234,10 +271,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should return empty list for non-matching criteria")
+    @DisplayName("GET /users/search - should return empty list for non-matching criteria (active users only)")
     void searchUsers_NonMatchingCriteria_ShouldReturnEmptyList() {
         given().header(admin.authenticated())
                .queryParam("name", "Nonexistent User")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -246,10 +284,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should be case insensitive for name and email")
+    @DisplayName("GET /users/search - should be case insensitive for name and email (active users only)")
     void searchUsers_CaseInsensitive_ShouldReturnResults() {
         given().header(admin.authenticated())
                .queryParam("name", "JOHN")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -278,11 +317,12 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should handle empty query parameters gracefully")
+    @DisplayName("GET /users/search - should handle empty query parameters gracefully (active users only)")
     void searchUsers_EmptyQueryParams_ShouldReturnAllActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("name", "")
                .queryParam("email", "")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -292,10 +332,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should support partial name matching")
-    void searchUsers_PartialName_ShouldReturnMatchingUsers() {
+    @DisplayName("GET /users/search - should support partial name matching (active users only)")
+    void searchUsers_PartialName_ShouldReturnMatchingActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("name", "Do")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -305,10 +346,11 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should support partial email matching")
-    void searchUsers_PartialEmail_ShouldReturnMatchingUsers() {
+    @DisplayName("GET /users/search - should support partial email matching (active users only)")
+    void searchUsers_PartialEmail_ShouldReturnMatchingActiveUsers() {
         given().header(admin.authenticated())
                .queryParam("email", "smith")
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -321,6 +363,7 @@ class SearchUserEndpointTest {
     @DisplayName("GET /users/search - should return users ordered by name")
     void searchUsers_ShouldReturnUsersOrderedByName() {
         List<String> userNames = given().header(admin.authenticated())
+                                        .queryParam("disabled", false)
                                         .when()
                                         .get(SEARCH_USERS_PATH)
                                         .then()
@@ -335,37 +378,10 @@ class SearchUserEndpointTest {
     }
 
     @Test
-    @DisplayName("GET /users/search - should exclude disabled users from all searches")
-    void searchUsers_ShouldAlwaysExcludeDisabledUsers() {
-        // Search with criteria that would match disabled user
-        given().header(admin.authenticated())
-               .queryParam("name", "Inactive")
-               .when()
-               .get(SEARCH_USERS_PATH)
-               .then()
-               .statusCode(HttpStatus.SC_OK)
-               .body("$", empty());
-
-        given().header(admin.authenticated())
-               .queryParam("email", "inactive@example.com")
-               .when()
-               .get(SEARCH_USERS_PATH)
-               .then()
-               .statusCode(HttpStatus.SC_OK)
-               .body("$", empty());
-
-        given().header(admin.authenticated())
-               .queryParam("profiles", userProfile.getId())
-               .when()
-               .get(SEARCH_USERS_PATH)
-               .then()
-               .body("username", not(hasItem(disabledUser.username())));
-    }
-
-    @Test
     @DisplayName("GET /users/search - should return complete user response structure")
     void searchUsers_ShouldReturnCompleteResponseStructure() {
         given().header(admin.authenticated())
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -396,6 +412,7 @@ class SearchUserEndpointTest {
 
             given().header(admin.authenticated())
                    .queryParam("name", "O'Brian")
+                   .queryParam("disabled", false)
                    .when()
                    .get(SEARCH_USERS_PATH)
                    .then()
@@ -417,6 +434,7 @@ class SearchUserEndpointTest {
 
             given().header(admin.authenticated())
                    .queryParam("name", "A")
+                   .queryParam("disabled", false)
                    .when()
                    .get(SEARCH_USERS_PATH)
                    .then()
@@ -431,11 +449,42 @@ class SearchUserEndpointTest {
             given().header(admin.authenticated())
                    .queryParam("profiles", "")
                    .queryParam("roles", "")
+                   .queryParam("disabled", false)
                    .when()
                    .get(SEARCH_USERS_PATH)
                    .then()
                    .statusCode(HttpStatus.SC_OK)
                    .body("$", hasSize(4)); // All active users
+        }
+
+        @Test
+        @DisplayName("GET /users/search - should filter by disabled status when specified")
+        void searchUsers_FilterByDisabled_ShouldRespectParameter() {
+            // Test with disabled=true
+            given().header(admin.authenticated())
+                   .queryParam("disabled", true)
+                   .when()
+                   .get(SEARCH_USERS_PATH)
+                   .then()
+                   .statusCode(HttpStatus.SC_OK)
+                   .body("$", hasSize(1)); // All users including disabled
+
+            // Test with disabled=false
+            given().header(admin.authenticated())
+                   .queryParam("disabled", false)
+                   .when()
+                   .get(SEARCH_USERS_PATH)
+                   .then()
+                   .statusCode(HttpStatus.SC_OK)
+                   .body("$", hasSize(4)); // Only active users
+
+            // Test with no disabled parameter (should default to null/not filter)
+            given().header(admin.authenticated())
+                   .when()
+                   .get(SEARCH_USERS_PATH)
+                   .then()
+                   .statusCode(HttpStatus.SC_OK)
+                   .body("$", hasSize(5)); // All users (no filtering by disabled)
         }
     }
 
@@ -453,6 +502,7 @@ class SearchUserEndpointTest {
         }
 
         given().header(admin.authenticated())
+               .queryParam("disabled", false)
                .when()
                .get(SEARCH_USERS_PATH)
                .then()
@@ -464,6 +514,7 @@ class SearchUserEndpointTest {
     @DisplayName("GET /users/search - should validate response types")
     void searchUsers_ShouldReturnCorrectDataTypes() {
         List<UserResponse> users = given().header(admin.authenticated())
+                                          .queryParam("disabled", false)
                                           .when()
                                           .get(SEARCH_USERS_PATH)
                                           .then()
