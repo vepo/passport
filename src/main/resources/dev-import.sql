@@ -6,10 +6,13 @@ BEGIN
     INSERT INTO tb_roles (name) VALUES ('Domain.Editor');
     INSERT INTO tb_roles (name) VALUES ('Domain.Stats.Viewer');
     INSERT INTO tb_roles (name) VALUES ('passport.admin');
+    INSERT INTO tb_roles (name) VALUES ('domains.admin');
     
     INSERT INTO tb_profile_roles (profile_id, role_id) 
     VALUES ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
             (SELECT id FROM tb_roles WHERE name = 'Domain.Editor')), 
+           ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
+            (SELECT id FROM tb_roles WHERE name = 'domains.admin')), 
            ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
             (SELECT id FROM tb_roles WHERE name = 'Domain.Stats.Viewer')), 
            ((SELECT id FROM tb_profiles WHERE name = 'Domain Viewer'),

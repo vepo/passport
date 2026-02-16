@@ -30,7 +30,7 @@ public class DisableUserEndpoint {
 
     @POST
     @Transactional
-    public UserResponse update(@PathParam("userId") long userId) {
+    public UserResponse disable(@PathParam("userId") long userId) {
         return UserResponse.load(this.userRepository.findById(userId)
                                                     .map(user -> {
                                                         user.setDisabled(true);
