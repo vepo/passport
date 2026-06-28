@@ -7,6 +7,7 @@ BEGIN
     INSERT INTO tb_roles (name) VALUES ('Domain.Stats.Viewer');
     INSERT INTO tb_roles (name) VALUES ('passport.admin');
     INSERT INTO tb_roles (name) VALUES ('domains.admin');
+    INSERT INTO tb_roles (name) VALUES ('engage.admin');
     
     INSERT INTO tb_profile_roles (profile_id, role_id) 
     VALUES ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
@@ -15,10 +16,14 @@ BEGIN
             (SELECT id FROM tb_roles WHERE name = 'domains.admin')), 
            ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
             (SELECT id FROM tb_roles WHERE name = 'Domain.Stats.Viewer')), 
+           ((SELECT id FROM tb_profiles WHERE name = 'Domain Manager'),
+            (SELECT id FROM tb_roles WHERE name = 'engage.admin')), 
            ((SELECT id FROM tb_profiles WHERE name = 'Domain Viewer'),
             (SELECT id FROM tb_roles WHERE name = 'Domain.Stats.Viewer')), 
            ((SELECT id FROM tb_profiles WHERE name = 'Passport Admin'),
-            (SELECT id FROM tb_roles WHERE name = 'passport.admin'));
+            (SELECT id FROM tb_roles WHERE name = 'passport.admin')),
+           ((SELECT id FROM tb_profiles WHERE name = 'Passport Admin'),
+            (SELECT id FROM tb_roles WHERE name = 'engage.admin'));
 
     -- -- Usuário sem roles (se aplicável)
     INSERT INTO tb_users (username, name, email, encoded_password) VALUES 

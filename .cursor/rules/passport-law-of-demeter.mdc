@@ -1,0 +1,13 @@
+---
+description: Law of Demeter — no train wrecks
+globs: src/**/*.java
+alwaysApply: false
+---
+
+# Law of Demeter
+
+Avoid `user.getProfiles().stream().flatMap(p -> p.getRoles()...)` outside `JwtGenerator` / repository layer.
+
+Expose intent helpers (`getRoleNames()`, `isActive()`) when multiple callers need the same traversal.
+
+Repository JPQL/Criteria paths are fine.

@@ -1,0 +1,13 @@
+---
+description: Keep dev-import.sql valid across Flyway schema changes
+globs: src/main/resources/dev-import.sql,src/main/resources/db/migration/*.sql
+alwaysApply: false
+---
+
+# dev-import.sql — schema change safety
+
+Runs after every Flyway migration on `%dev` startup. Update seed in the **same PR** as migrations.
+
+- Match new `NOT NULL` columns and FKs in INSERT statements.
+- Use subqueries for profile/role/user wiring.
+- Verify: restart `quarkus:dev` without SQL errors.

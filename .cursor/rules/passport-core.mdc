@@ -1,0 +1,36 @@
+---
+description: Core Passport conventions (identity API, JWT, packages)
+alwaysApply: true
+---
+
+# Passport — core rules
+
+Follow [ARCHITECTURE.md](../../ARCHITECTURE.md) and [`docs/domain-specification.md`](../../docs/domain-specification.md).
+
+## Stack
+
+- Quarkus + REST/JSON. PostgreSQL + Flyway. SmallRye JWT.
+- Mailer for password reset (`MailerService`, CDI events).
+- Repo tooling: no Python — [passport-tooling-languages.mdc](passport-tooling-languages.mdc).
+
+## Endpoints
+
+- `@Path` + constructor injection. Records for request/response bodies.
+- Admin APIs: `@RolesAllowed(RequiredRoles.ADMIN)` → `passport.admin`.
+- Auth routes public where appropriate (`/auth/login`, reset flow).
+
+## Data access
+
+- Repositories in feature packages; `EntityManager`; `@Transactional` on writes.
+- [passport-jpa.mdc](passport-jpa.mdc) for query style.
+- Password hashing only via `PasswordEncoder`; JWT via `JwtGenerator`.
+
+## Never
+
+- `System.out.println` — use SLF4J.
+- Return raw encoded passwords in API responses.
+- Hardcode role strings in many places — use seeds / `RequiredRoles` / domain spec.
+
+## When adding a feature
+
+ARCHITECTURE.md §13 — migration → model → repository → endpoint → tests → dev seed → domain spec → **ARCHITECTURE.md**.

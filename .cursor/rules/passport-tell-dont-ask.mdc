@@ -1,0 +1,13 @@
+---
+description: Tell, Don't Ask — encapsulate domain decisions in intent methods
+globs: src/**/*.java
+alwaysApply: false
+---
+
+# Tell, Don't Ask
+
+Naming: [domain-model.mdc](domain-model.mdc). See [passport-law-of-demeter.mdc](passport-law-of-demeter.mdc).
+
+Tell services/entities to **enable**, **disable**, **assign profiles** — do not scatter `setDisabled(true)` with duplicated guards in endpoints.
+
+Apply on new/touched behavior; consolidate legacy ask-then-set when editing.

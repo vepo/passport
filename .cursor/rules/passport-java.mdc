@@ -1,0 +1,17 @@
+---
+description: Java endpoint, repository, and entity conventions
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Java conventions
+
+Import order: `java.*` / `jakarta.*` → `io.quarkus.*` → third-party → `dev.vepo.passport.*`.
+
+- Formatting: [passport-format-imports.mdc](passport-format-imports.mdc).
+- Strings: [passport-strings.mdc](passport-strings.mdc).
+- Prefer `var` when type is obvious; records for DTOs.
+- SLF4J logging; no secrets in logs.
+- Entities in `model/` package; `Instant` timestamps on `User`.
+
+Domain naming: [domain-model.mdc](domain-model.mdc).

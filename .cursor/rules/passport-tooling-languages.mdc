@@ -1,0 +1,10 @@
+---
+description: No Python; scripts in bash or JBang if added
+alwaysApply: true
+---
+
+# Tooling languages
+
+- No Python in the repository.
+- If scripts are added: bash or JBang only.
+- No Node build for Passport (Java/Quarkus only).

@@ -1,0 +1,33 @@
+---
+description: Run local static analysis and fix new issues before finishing a task
+alwaysApply: true
+---
+
+# Static analysis — finish checklist
+
+## When to run
+
+After Java, SQL, or config changes. Skip docs-only / `.mdc`-only edits.
+
+## Required commands (match CI)
+
+```bash
+./mvnw -B clean test
+```
+
+## Formatting
+
+```bash
+./mvnw -B process-sources
+```
+
+Uses [`resources/formatter.xml`](../../resources/formatter.xml) — [passport-format-imports.mdc](passport-format-imports.mdc).
+
+## IDE diagnostics
+
+`ReadLints` on changed files; fix new issues.
+
+## Do not finish while
+
+- `./mvnw test` fails.
+- New linter problems in touched files.

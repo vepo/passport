@@ -1,0 +1,19 @@
+---
+description: Java formatting and import hygiene
+globs: "**/*.java"
+alwaysApply: true
+---
+
+# Java formatting and imports
+
+[`resources/formatter.xml`](../../resources/formatter.xml) via formatter Maven plugin.
+
+After editing Java:
+
+```bash
+./mvnw -B process-sources
+```
+
+Remove unused imports. No FQN unless name collision.
+
+Full gate: [static-analysis.mdc](static-analysis.mdc).

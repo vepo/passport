@@ -315,6 +315,10 @@ public class Given {
     public static void cleanup() {
         withTransaction(() -> {
             var em = inject(EntityManager.class);
+            em.createQuery("DELETE FROM UserNotification").executeUpdate();
+            em.createQuery("DELETE FROM NotificationItem").executeUpdate();
+            em.createQuery("DELETE FROM Notification").executeUpdate();
+            em.createQuery("DELETE FROM ChannelFollow").executeUpdate();
             em.createQuery("DELETE FROM ResetPasswordToken").executeUpdate();
             em.createQuery("DELETE FROM User").executeUpdate();
             em.createQuery("DELETE FROM Profile").executeUpdate();

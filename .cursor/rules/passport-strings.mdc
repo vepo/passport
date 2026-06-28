@@ -1,0 +1,9 @@
+---
+description: Avoid string concatenation — prefer formatted()
+globs: src/main/java/**/*.java
+alwaysApply: false
+---
+
+# String building
+
+Use `.formatted()` for messages and exceptions; `StringBuilder` for loops. No `+` concatenation for interpolated strings.

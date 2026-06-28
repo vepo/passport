@@ -1,0 +1,13 @@
+---
+description: JPA query conventions
+globs: src/main/java/**/*Repository.java
+alwaysApply: false
+---
+
+# JPA usage
+
+Queries only in `*Repository` classes. Dynamic filters → Criteria; static → JPQL; native SQL last resort for complex search.
+
+Named parameters always. No `EntityManager` in endpoints.
+
+See [passport-layered-architecture.mdc](passport-layered-architecture.mdc).

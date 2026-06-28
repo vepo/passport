@@ -1,0 +1,27 @@
+---
+description: Dev seed data (dev-import.sql) for local login and admin flows
+alwaysApply: true
+---
+
+# Development experience — dev seed data
+
+[`src/main/resources/dev-import.sql`](../../src/main/resources/dev-import.sql) runs on every `%dev` startup via [`DatabaseDevSetup`](../../src/main/java/dev/vepo/passport/shared/infra/DatabaseDevSetup.java).
+
+## Run
+
+```bash
+./mvnw quarkus:dev
+```
+
+Backoffice: `ng serve --proxy-config src/proxy.conf.json` → login `cto-boss` / `qwas1234`.
+
+## When adding features
+
+Extend dev-import with profiles, roles, or users that exercise the feature. Stable usernames: `cto-boss`, `junior`, `guest-user`.
+
+## Never
+
+- Ship admin features with no dev persona to test them.
+- Put production credentials in dev-import.
+
+See [dev-import-sql-safety.mdc](dev-import-sql-safety.mdc).

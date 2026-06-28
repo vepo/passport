@@ -1,0 +1,31 @@
+---
+description: Layered architecture — Endpoint, Service, Repository responsibilities
+alwaysApply: true
+---
+
+# Layered architecture
+
+Follow [ARCHITECTURE.md](../../ARCHITECTURE.md) §8. Dependencies flow **downward**:
+
+```
+*Endpoint  →  *Service / helper (when needed)  →  *Repository  →  database
+```
+
+## *Endpoint
+
+- HTTP boundary: validation, `@RolesAllowed`, JSON mapping.
+- May inject repositories for straightforward CRUD (current pattern in domain admin endpoints).
+- Use `PasswordEncoder`, `JwtGenerator`, `MailerService` for auth/mail — not raw `EntityManager`.
+
+## *Repository
+
+- `UserRepository`, `ProfileRepository`, `RoleRepository` — queries and persistence only.
+- **Never** JAX-RS or JWT types.
+
+## Helpers (not layers)
+
+`PasswordEncoder`, `JwtGenerator`, `MailerService`, exception mappers.
+
+## When adding a feature
+
+Entity in `model/` → repository → endpoint (+ mail/event if needed).

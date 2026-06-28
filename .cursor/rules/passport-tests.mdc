@@ -1,0 +1,14 @@
+---
+description: QuarkusTest and Given builder conventions
+globs: src/test/java/**/*.java
+alwaysApply: false
+---
+
+# Test conventions
+
+- `@QuarkusTest` for HTTP/DB integration tests.
+- `Given` in `dev.vepo.passport.shared` — `admin()`, `nonAdmin()`, builders, `cleanDatabase()`.
+- RestAssured with `Given.*().authenticated()` for JWT headers.
+- Self-contained tests; clean shared data when mutating.
+
+Do not rely on `dev-import.sql` row counts — seed via `Given`.

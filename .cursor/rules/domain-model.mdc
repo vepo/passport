@@ -1,0 +1,42 @@
+---
+description: Domain Model Conventions - Ensure domain model usage in code and tests, with continuous alignment to the domain specification.
+globs:
+  - 'src/main/java/**/*.java'
+  - 'src/main/resources/**/*.js'
+  - 'src/main/resources/**/*.html'
+  - 'src/test/**/*.java'
+alwaysApply: true
+---
+
+# Ensure Domain Model Usage on Code
+
+## Domain Specification Location
+
+The domain specification MUST reside in [`docs/domain-specification.md`](../../docs/domain-specification.md).  
+It MUST contain **"Ubiquitous Language"**. Also follow [ARCHITECTURE.md](../../ARCHITECTURE.md).
+
+## Pre-Change Checklist (Before Any Code Change)
+
+1. **Read** the domain specification (especially Ubiquitous Language).
+2. **Question the change against the domain** — new entities, roles, auth rules, UI labels?
+3. Update the specification **first** if the domain changes.
+
+**Do NOT write code or tests until answered.**
+
+## Coding Rules
+
+Identifiers MUST use domain terms: **User**, **Profile**, **Role**, **Login**, **Assign profiles** — not `UserData`, `doLogin`, `setFlag`.
+
+See [passport-tell-dont-ask.mdc](passport-tell-dont-ask.mdc), [passport-law-of-demeter.mdc](passport-law-of-demeter.mdc).
+
+## Testing Rules
+
+Tests use domain language (`Given.admin()`, `shouldRejectLoginForDisabledUser`).
+
+## Post-Change Update Rule
+
+Update `docs/domain-specification.md` and [ARCHITECTURE.md](../../ARCHITECTURE.md) when concepts, routes, or invariants change.
+
+## Violation Handling
+
+Refactor technical names to domain terms when touching violating code.

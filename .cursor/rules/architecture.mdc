@@ -1,0 +1,23 @@
+---
+description: Always read ARCHITECTURE.md before coding; update it when structure changes
+alwaysApply: true
+---
+
+# Architecture document — read and maintain
+
+[`ARCHITECTURE.md`](../../ARCHITECTURE.md) is the canonical map of Passport. Agents must treat it as source of truth alongside the code.
+
+## Before starting work
+
+1. **Read** `ARCHITECTURE.md` and [`docs/domain-specification.md`](../../docs/domain-specification.md) (Ubiquitous Language).
+2. Skim existing code in the same package.
+
+## Before marking a task done
+
+Update `ARCHITECTURE.md` when you changed routes, tables, packages, auth, or JWT claims.  
+Update `docs/domain-specification.md` when domain language or invariants change ([domain-model.mdc](domain-model.mdc)).
+
+## Never
+
+- Add significant behavior without reading ARCHITECTURE.md and the domain spec first.
+- Leave either document stale after a structural or domain change.
