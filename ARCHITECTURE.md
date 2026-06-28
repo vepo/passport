@@ -47,6 +47,8 @@ JWT `groups` claim = distinct role names from all active profiles of the user (`
 | `POST` | `/auth/request-reset-password` | Public | Email reset link |
 | `POST` | `/auth/reset` | Public | Confirm reset with token |
 
+Public auth routes are rate-limited per client IP (`AuthRateLimitFilter`): default 30 requests/minute on login and password reset paths. Configure via `passport.auth.rate-limit.*`.
+
 ## 5. User API
 
 Admin (`passport.admin`) unless noted.
@@ -144,7 +146,7 @@ dev.vepo.passport/
     ├── exception/    # Exception mappers, ErrorResponse
     ├── infra/        # DatabaseDevSetup
     ├── routing/      # SPARouting
-    ├── security/     # PasswordEncoder, RequiredRoles, InternalServiceKeyFilter
+    ├── security/     # PasswordEncoder, RequiredRoles, InternalServiceKeyFilter, AuthRateLimitFilter
     └── templating/   # Qute extensions (if used)
 ```
 
@@ -211,6 +213,9 @@ mp.jwt.verify.issuer=${JWT_ISSUER:https://passport.vepo.dev}
 password.algorithm=PBKDF2WithHmacSHA512
 base.url=https://backoffice.vepo.dev
 passport.internal.service-key=${PASSPORT_INTERNAL_SERVICE_KEY:dev-internal-service-key}
+passport.auth.rate-limit.enabled=true
+passport.auth.rate-limit.max-requests=30
+passport.auth.rate-limit.window=PT1M
 ```
 
 ## 16. Common pitfalls
