@@ -1,5 +1,6 @@
 package dev.vepo.passport.notification;
 
+import java.util.List;
 import java.util.Optional;
 
 import dev.vepo.passport.model.Notification;
@@ -29,5 +30,16 @@ public class NotificationRepository {
                             .setParameter("id", id)
                             .getResultStream()
                             .findFirst();
+    }
+
+    public List<Notification> findByEngageChannelId(Long engageChannelId) {
+        return entityManager.createQuery("""
+                                         FROM Notification n
+                                         LEFT JOIN FETCH n.items
+                                         WHERE n.engageChannelId = :engageChannelId
+                                         ORDER BY n.createdAt DESC
+                                         """, Notification.class)
+                            .setParameter("engageChannelId", engageChannelId)
+                            .getResultList();
     }
 }

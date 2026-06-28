@@ -42,4 +42,8 @@ BEGIN
             (SELECT id FROM tb_profiles WHERE name = 'Domain Viewer')),
            ((SELECT id FROM tb_users WHERE username = 'cto-boss'),
             (SELECT id FROM tb_profiles WHERE name = 'Passport Admin'));
+
+    -- Channel follows (Engage tb_channels.id = 1 from Engage seed)
+    INSERT INTO tb_channel_follows (user_id, engage_channel_id)
+    VALUES ((SELECT id FROM tb_users WHERE username = 'cto-boss'), 1);
 END $$;

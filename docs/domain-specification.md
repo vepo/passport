@@ -79,11 +79,22 @@ erDiagram
 | **Create role** | New permission string. | `CreateRoleEndpoint` |
 | **Delete role** | Remove role from catalog. | `DeleteRoleEndpoint` |
 
+### Notifications
+
+| Term | Meaning | Code / notes |
+|------|---------|--------------|
+| **Notification** | Cross-service event (e.g. Engage sync run) stored once with title, description, report JSON. | `Notification`, `tb_notifications` |
+| **Notification item** | One sub-report per outbound API call (operation, outcome, counts). | `NotificationItem`, `tb_notification_items` |
+| **User notification** | Per-user delivery row with read state. | `UserNotification`, `tb_user_notifications` |
+| **Read state** | `read`, `read_at`, `opened_at` on user notification. | `UserNotification.markRead()`, `markOpened()` |
+| **Channel follow** | User subscription to an Engage channel id for notification fan-out. | `ChannelFollow`, `tb_channel_follows` |
+| **Internal notification** | Service-to-service create via `X-Service-Key`. | `CreateInternalNotificationEndpoint` |
+
 ### Dev personas (seed data)
 
 | Username | Profiles | Typical use |
 |----------|----------|-------------|
-| `cto-boss` | Domain Manager, Domain Viewer, Passport Admin | Full admin + domain roles |
+| `cto-boss` | Domain Manager, Domain Viewer, Passport Admin | Full admin + domain roles; follows Engage channel id `1` |
 | `junior` | (none) | User without elevated roles |
 | `guest-user` | (none) | Minimal account |
 

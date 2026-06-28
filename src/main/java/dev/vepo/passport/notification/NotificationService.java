@@ -70,19 +70,39 @@ public class NotificationService {
                                          .toList();
     }
 
+    public List<NotificationSummaryResponse> listByEngageChannel(String username, Long engageChannelId) {
+        var user = requireActiveUser(username);
+        return notificationRepository.findByEngageChannelId(engageChannelId)
+                                     .stream()
+                                     .map(notification -> {
+                                         var read = userNotificationRepository.findByUserAndNotificationId(user, notification.getId())
+                                                                              .map(UserNotification::isRead)
+                                                                              .orElse(false);
+                                         return NotificationSummaryResponse.from(notification, read);
+                                     })
+                                     .toList();
+    }
+
     public long countUnreadForUser(String username) {
         var user = requireActiveUser(username);
         return userNotificationRepository.countUnreadByUser(user);
     }
 
     @Transactional
-    public NotificationResponse findForUser(String username, Long notificationId) {
+    public NotificationResponse findForUser(String username, Long notificationId, boolean allowEngageAdminAccess) {
         var user = requireActiveUser(username);
-        var delivery = userNotificationRepository.findByUserAndNotificationId(user, notificationId)
+        var delivery = userNotificationRepository.findByUserAndNotificationId(user, notificationId);
+        if (delivery.isPresent()) {
+            delivery.get().markOpened();
+            userNotificationRepository.merge(delivery.get());
+            return NotificationResponse.fromDelivery(delivery.get().getId(), delivery.get().getNotification(), delivery.get().isRead());
+        }
+        if (!allowEngageAdminAccess) {
+            throw new NotFoundException("Notification not found with id: %d".formatted(notificationId));
+        }
+        var notification = notificationRepository.findById(notificationId)
                                                  .orElseThrow(() -> new NotFoundException("Notification not found with id: %d".formatted(notificationId)));
-        delivery.markOpened();
-        userNotificationRepository.merge(delivery);
-        return NotificationResponse.fromDelivery(delivery.getId(), delivery.getNotification(), delivery.isRead());
+        return NotificationResponse.fromDelivery(null, notification, false);
     }
 
     @Transactional

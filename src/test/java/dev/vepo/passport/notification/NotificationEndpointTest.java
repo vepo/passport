@@ -154,4 +154,41 @@ class NotificationEndpointTest {
                .statusCode(HttpStatus.SC_OK)
                .body("read", is(true));
     }
+
+    @Test
+    @DisplayName("Should list all sync reports for an Engage channel")
+    void listByEngageChannel_ReturnsChannelReports() {
+        Given.profile().withName("Engage Manager").withRole("engage.admin").persist();
+        var admin = Given.user()
+                         .withUsername("engage-admin")
+                         .withEmail("engage-admin@passport.vepo.dev")
+                         .withName("Engage Admin")
+                         .withPassword("password123")
+                         .withProfile("Engage Manager")
+                         .persist();
+
+        given().header(InternalServiceKeyFilter.SERVICE_KEY_HEADER, SERVICE_KEY)
+               .contentType(ContentType.JSON)
+               .body("""
+                     {
+                       "sourceService": "engage",
+                       "sourceType": "video_sync",
+                       "engageChannelId": 9,
+                       "title": "Relatório do canal",
+                       "description": "Sync",
+                       "report": "{}",
+                       "items": []
+                     }
+                     """)
+               .when().post("/api/internal/notifications")
+               .then()
+               .statusCode(HttpStatus.SC_CREATED);
+
+        given().header(admin.authenticated())
+               .when().get("/api/notifications/by-channel/9")
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("$", hasSize(1))
+               .body("[0].title", is("Relatório do canal"));
+    }
 }

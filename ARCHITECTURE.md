@@ -26,6 +26,10 @@ Canonical reference for developers and AI agents working on Passport. Domain ter
 | `Profile` | `tb_profiles` | Named bundle of roles assigned to users |
 | `Role` | `tb_roles` | Permission string (e.g. `passport.admin`, `domains.admin`) |
 | `ResetPasswordToken` | `tb_reset_password_tokens` | Hashed token for password reset flow |
+| `Notification` | `tb_notifications` | Cross-service event payload (source, title, report JSON) |
+| `NotificationItem` | `tb_notification_items` | Sub-task / API call report attached to a notification |
+| `UserNotification` | `tb_user_notifications` | Per-user delivery and read state |
+| `ChannelFollow` | `tb_channel_follows` | User subscription to an Engage channel id |
 
 Relations:
 - `User` ↔ `Profile` — `tb_users_profiles` (many-to-many)
@@ -79,6 +83,36 @@ Admin (`passport.admin`) unless noted.
 | `GET` | `/roles/search` | Search roles |
 | `DELETE` | `/roles/{roleId}` | Delete role |
 
+## 7.1 Notification API
+
+User APIs (`@Authenticated` — any logged-in user):
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/notifications` | List current user's notifications (`?unread=true` optional) |
+| `GET` | `/notifications/unread-count` | Unread count for shell badge |
+| `GET` | `/notifications/by-channel/{engageChannelId}` | All sync reports for channel (`engage.admin`) |
+| `GET` | `/notifications/{id}` | Detail + items; marks opened/read if not yet read |
+| `PATCH` | `/notifications/{id}/read` | Mark read |
+| `PATCH` | `/notifications/{id}/unread` | Mark unread |
+
+Channel follows (Engage channel id, no cross-DB FK):
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/channel-follows` | List followed Engage channel ids |
+| `POST` | `/channel-follows` | Follow `{ engageChannelId }` (idempotent) |
+| `DELETE` | `/channel-follows/{engageChannelId}` | Unfollow |
+| `GET` | `/channel-follows/{engageChannelId}/status` | `{ following: boolean }` |
+
+Internal API (service key, no user JWT):
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| `POST` | `/internal/notifications` | Header `X-Service-Key` | Create notification + fan-out to channel followers |
+
+Filter: `InternalServiceKeyFilter` on paths under `internal/`. Config: `passport.internal.service-key`.
+
 ## 8. Design patterns
 
 ### Repository
@@ -103,12 +137,14 @@ dev.vepo.passport/
 ├── model/            # User, Profile, Role, ResetPasswordToken entities
 ├── profile/          # Profile CRUD, assign roles, enable/disable
 ├── role/             # Role CRUD, search, delete
+├── notification/     # NotificationService, user + internal endpoints
+├── channelfollow/    # Channel follow CRUD
 ├── user/             # User CRUD, assign profiles, enable/disable
 └── shared/
     ├── exception/    # Exception mappers, ErrorResponse
     ├── infra/        # DatabaseDevSetup
     ├── routing/      # SPARouting
-    ├── security/     # PasswordEncoder, RequiredRoles
+    ├── security/     # PasswordEncoder, RequiredRoles, InternalServiceKeyFilter
     └── templating/   # Qute extensions (if used)
 ```
 
@@ -140,6 +176,7 @@ JWT issuer: `mp.jwt.verify.issuer` (default `https://passport.vepo.dev`).
 - `tb_users`, `tb_profiles`, `tb_roles`
 - `tb_users_profiles`, `tb_profile_roles`
 - `tb_reset_password_tokens`
+- `tb_notifications`, `tb_notification_items`, `tb_user_notifications`, `tb_channel_follows`
 
 DDL: `src/main/resources/db/migration/`
 
@@ -173,6 +210,7 @@ quarkus.flyway.migrate-at-start=true
 mp.jwt.verify.issuer=${JWT_ISSUER:https://passport.vepo.dev}
 password.algorithm=PBKDF2WithHmacSHA512
 base.url=https://backoffice.vepo.dev
+passport.internal.service-key=${PASSPORT_INTERNAL_SERVICE_KEY:dev-internal-service-key}
 ```
 
 ## 16. Common pitfalls
@@ -190,3 +228,4 @@ base.url=https://backoffice.vepo.dev
 
 - **Backoffice** — Angular admin UI; proxy `/passport/api/**` → Passport.
 - **Visita** — Validates JWT role `domains.admin` for domain admin API.
+- **Engage** — Publishes sync run reports via `POST /api/internal/notifications` (service key).

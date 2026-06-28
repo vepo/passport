@@ -27,7 +27,11 @@ public class InternalServiceKeyFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         var path = requestContext.getUriInfo().getPath();
-        if (path == null || !path.startsWith("internal/")) {
+        if (path == null) {
+            return;
+        }
+        var normalized = path.startsWith("/") ? path.substring(1) : path;
+        if (!normalized.startsWith("internal/")) {
             return;
         }
 
