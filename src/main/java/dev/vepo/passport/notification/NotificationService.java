@@ -1,5 +1,7 @@
 package dev.vepo.passport.notification;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import dev.vepo.passport.model.Notification;
@@ -126,6 +128,14 @@ public class NotificationService {
         var user = requireActiveUser(username);
         var markedCount = userNotificationRepository.markAllReadByUser(user);
         return new MarkAllReadResponse(markedCount);
+    }
+
+    @Transactional
+    public PurgeOldReadNotificationsResult purgeOldReadNotifications(Duration readRetention) {
+        var readBefore = Instant.now().minus(readRetention);
+        var deletedDeliveries = userNotificationRepository.deleteReadOlderThan(readBefore);
+        var deletedNotifications = notificationRepository.deleteWithoutDeliveries();
+        return new PurgeOldReadNotificationsResult(deletedDeliveries, deletedNotifications);
     }
 
     private UserNotification requireDelivery(String username, Long notificationId) {

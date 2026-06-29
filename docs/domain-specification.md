@@ -89,6 +89,7 @@ erDiagram
 | **Read state** | `read`, `read_at`, `opened_at` on user notification. | `UserNotification.markRead()`, `markOpened()` |
 | **Channel follow** | User subscription to an Engage channel id for notification fan-out. | `ChannelFollow`, `tb_channel_follows` |
 | **Internal notification** | Service-to-service create via `X-Service-Key`. | `CreateInternalNotificationEndpoint` |
+| **Purge old read notifications** | Scheduled job removes read deliveries older than 2 days; deletes orphan notifications with no remaining deliveries. | `PurgeOldReadNotificationsTask` |
 
 ### Dev personas (seed data)
 

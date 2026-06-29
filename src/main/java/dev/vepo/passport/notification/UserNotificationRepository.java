@@ -81,4 +81,14 @@ public class UserNotificationRepository {
                             .setParameter("readAt", Instant.now())
                             .executeUpdate();
     }
+
+    @Transactional
+    public int deleteReadOlderThan(Instant readBefore) {
+        return entityManager.createQuery("""
+                                         DELETE FROM UserNotification un
+                                         WHERE un.read = true AND un.readAt < :readBefore
+                                         """)
+                            .setParameter("readBefore", readBefore)
+                            .executeUpdate();
+    }
 }

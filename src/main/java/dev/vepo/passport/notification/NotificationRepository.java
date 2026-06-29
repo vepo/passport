@@ -42,4 +42,15 @@ public class NotificationRepository {
                             .setParameter("engageChannelId", engageChannelId)
                             .getResultList();
     }
+
+    @Transactional
+    public int deleteWithoutDeliveries() {
+        return entityManager.createQuery("""
+                                         DELETE FROM Notification n
+                                         WHERE NOT EXISTS (
+                                             SELECT 1 FROM UserNotification un WHERE un.notification = n
+                                         )
+                                         """)
+                            .executeUpdate();
+    }
 }

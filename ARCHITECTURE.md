@@ -116,6 +116,8 @@ Internal API (service key, no user JWT):
 
 Filter: `InternalServiceKeyFilter` on paths under `internal/`. Config: `passport.internal.service-key`.
 
+Scheduled retention (`PurgeOldReadNotificationsTask`): deletes **read** user deliveries whose `read_at` is older than `passport.notifications.read-retention` (default `PT48H`), then removes notifications with no remaining deliveries. Config: `passport.notifications.purge.interval` (default `1h`).
+
 ## 8. Design patterns
 
 ### Repository
@@ -140,7 +142,7 @@ dev.vepo.passport/
 ├── model/            # User, Profile, Role, ResetPasswordToken entities
 ├── profile/          # Profile CRUD, assign roles, enable/disable
 ├── role/             # Role CRUD, search, delete
-├── notification/     # NotificationService, user + internal endpoints
+├── notification/     # NotificationService, user + internal endpoints, purge task
 ├── channelfollow/    # Channel follow CRUD
 ├── user/             # User CRUD, assign profiles, enable/disable
 └── shared/
@@ -217,6 +219,8 @@ passport.internal.service-key=${PASSPORT_INTERNAL_SERVICE_KEY:dev-internal-servi
 passport.auth.rate-limit.enabled=true
 passport.auth.rate-limit.max-requests=30
 passport.auth.rate-limit.window=PT1M
+passport.notifications.read-retention=PT48H
+passport.notifications.purge.interval=1h
 ```
 
 ## 16. Common pitfalls
