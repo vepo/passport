@@ -156,6 +156,76 @@ class NotificationEndpointTest {
     }
 
     @Test
+    @DisplayName("Should mark all notifications read for current user")
+    void markAllRead_MarksEveryUnreadDelivery() {
+        var user = Given.user()
+                        .withUsername("mark-all-user")
+                        .withEmail("mark-all@passport.vepo.dev")
+                        .withName("Mark All User")
+                        .withPassword("password123")
+                        .persist();
+
+        given().header(user.authenticated())
+               .contentType(ContentType.JSON)
+               .body("{\"engageChannelId\": 3}")
+               .post("/api/channel-follows");
+
+        given().header(InternalServiceKeyFilter.SERVICE_KEY_HEADER, SERVICE_KEY)
+               .contentType(ContentType.JSON)
+               .body("""
+                     {
+                       "sourceService": "engage",
+                       "sourceType": "video_sync",
+                       "engageChannelId": 3,
+                       "title": "Primeira",
+                       "description": "Sync",
+                       "report": "{}",
+                       "items": []
+                     }
+                     """)
+               .post("/api/internal/notifications");
+
+        given().header(InternalServiceKeyFilter.SERVICE_KEY_HEADER, SERVICE_KEY)
+               .contentType(ContentType.JSON)
+               .body("""
+                     {
+                       "sourceService": "engage",
+                       "sourceType": "comment_sync",
+                       "engageChannelId": 3,
+                       "title": "Segunda",
+                       "description": "Sync",
+                       "report": "{}",
+                       "items": []
+                     }
+                     """)
+               .post("/api/internal/notifications");
+
+        given().header(user.authenticated())
+               .when().get("/api/notifications/unread-count")
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("count", equalTo(2));
+
+        given().header(user.authenticated())
+               .when().patch("/api/notifications/read-all")
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("markedCount", equalTo(2));
+
+        given().header(user.authenticated())
+               .when().get("/api/notifications/unread-count")
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("count", equalTo(0));
+
+        given().header(user.authenticated())
+               .when().get("/api/notifications?unread=true")
+               .then()
+               .statusCode(HttpStatus.SC_OK)
+               .body("$", hasSize(0));
+    }
+
+    @Test
     @DisplayName("Should list all sync reports for an Engage channel")
     void listByEngageChannel_ReturnsChannelReports() {
         Given.profile().withName("Engage Manager").withRole("engage.admin").persist();

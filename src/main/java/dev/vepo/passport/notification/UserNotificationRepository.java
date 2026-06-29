@@ -1,5 +1,6 @@
 package dev.vepo.passport.notification;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,5 +68,17 @@ public class UserNotificationRepository {
                                          """, Long.class)
                             .setParameter("user", user)
                             .getSingleResult();
+    }
+
+    @Transactional
+    public int markAllReadByUser(User user) {
+        return entityManager.createQuery("""
+                                         UPDATE UserNotification un
+                                         SET un.read = true, un.readAt = :readAt
+                                         WHERE un.user = :user AND un.read = false
+                                         """)
+                            .setParameter("user", user)
+                            .setParameter("readAt", Instant.now())
+                            .executeUpdate();
     }
 }

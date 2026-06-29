@@ -121,6 +121,13 @@ public class NotificationService {
         return NotificationSummaryResponse.from(delivery.getNotification(), delivery.isRead());
     }
 
+    @Transactional
+    public MarkAllReadResponse markAllRead(String username) {
+        var user = requireActiveUser(username);
+        var markedCount = userNotificationRepository.markAllReadByUser(user);
+        return new MarkAllReadResponse(markedCount);
+    }
+
     private UserNotification requireDelivery(String username, Long notificationId) {
         var user = requireActiveUser(username);
         return userNotificationRepository.findByUserAndNotificationId(user, notificationId)

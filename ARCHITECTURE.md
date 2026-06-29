@@ -97,6 +97,7 @@ User APIs (`@Authenticated` — any logged-in user):
 | `GET` | `/notifications/{id}` | Detail + items; marks opened/read if not yet read |
 | `PATCH` | `/notifications/{id}/read` | Mark read |
 | `PATCH` | `/notifications/{id}/unread` | Mark unread |
+| `PATCH` | `/notifications/read-all` | Mark all unread as read for current user |
 
 Channel follows (Engage channel id, no cross-DB FK):
 
