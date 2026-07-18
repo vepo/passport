@@ -61,6 +61,7 @@ erDiagram
 | **Enable user** | Set `disabled = false`. | `EnableUserEndpoint` |
 | **Disable user** | Set `disabled = true`; blocks login. | `DisableUserEndpoint` |
 | **Search users** | Filter by name, email, username, profiles, disabled. | `SearchUserEndpoint` |
+| **User directory** | Authenticated, privacy-limited search of **active** users (id, username, name, email) for peer apps such as Cursos. Requires `q` (≥ 2 chars); paged. | `SearchDirectoryUsersEndpoint`, `GET /directory/users` |
 
 ### Profile management actions
 

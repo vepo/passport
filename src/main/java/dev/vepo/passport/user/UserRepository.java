@@ -165,6 +165,39 @@ public class UserRepository {
         return new UserSearchCriteria();
     }
 
+    /**
+     * Active users matching name, username, or email (case-insensitive contains).
+     */
+    public List<User> searchDirectory(String query, int page, int size) {
+        var pattern = "%%%s%%".formatted(query.toLowerCase());
+        return entityManager.createQuery("""
+                                         FROM User u
+                                         WHERE u.disabled = false
+                                           AND (LOWER(u.name) LIKE :q
+                                                OR LOWER(u.username) LIKE :q
+                                                OR LOWER(u.email) LIKE :q)
+                                         ORDER BY u.name ASC
+                                         """, User.class)
+                            .setParameter("q", pattern)
+                            .setFirstResult(page * size)
+                            .setMaxResults(size)
+                            .getResultList();
+    }
+
+    public long countDirectory(String query) {
+        var pattern = "%%%s%%".formatted(query.toLowerCase());
+        return entityManager.createQuery("""
+                                         SELECT COUNT(u)
+                                         FROM User u
+                                         WHERE u.disabled = false
+                                           AND (LOWER(u.name) LIKE :q
+                                                OR LOWER(u.username) LIKE :q
+                                                OR LOWER(u.email) LIKE :q)
+                                         """, Long.class)
+                            .setParameter("q", pattern)
+                            .getSingleResult();
+    }
+
     public List<User> search(UserSearchCriteria criteria) {
         logger.info("Searching for users... criteria={}", criteria);
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

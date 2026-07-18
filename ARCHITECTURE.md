@@ -46,6 +46,7 @@ JWT `groups` claim = distinct role names from all active profiles of the user (`
 | `POST` | `/auth/change-password` | JWT | Change password |
 | `POST` | `/auth/request-reset-password` | Public | Email reset link |
 | `POST` | `/auth/reset` | Public | Confirm reset with token |
+| `GET` | `/directory/users` | JWT (any authenticated) | Privacy-limited active user directory for peer apps (`q`, `page`, `size`) |
 
 Public auth routes are rate-limited per client IP (`AuthRateLimitFilter`): default 30 requests/minute on login and password reset paths. Configure via `passport.auth.rate-limit.*`.
 
@@ -239,3 +240,4 @@ passport.notifications.purge.interval=1h
 - **Backoffice** — Angular admin UI; proxy `/passport/api/**` → Passport.
 - **Visita** — Validates JWT role `domains.admin` for domain admin API.
 - **Engage** — Publishes sync run reports via `POST /api/internal/notifications` (service key).
+- **Cursos** — Validates Passport JWT; uses login/me and `GET /directory/users` for teacher enrollment lookup.
