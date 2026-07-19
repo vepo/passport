@@ -3,6 +3,7 @@ package dev.vepo.passport.user;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -138,6 +139,18 @@ public class UserRepository {
                             .setParameter("id", id)
                             .getResultStream()
                             .findFirst();
+    }
+
+    public List<User> findActiveByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return entityManager.createQuery("""
+                                         FROM User
+                                         WHERE disabled = false AND id IN :ids
+                                         """, User.class)
+                            .setParameter("ids", ids)
+                            .getResultList();
     }
 
     public User save(User user) {

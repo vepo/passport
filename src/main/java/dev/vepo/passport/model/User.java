@@ -35,6 +35,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, length = 2000)
+    private String description = "";
+
     @Column(name = "encoded_password", nullable = false)
     private String encodedPassword;
 
@@ -98,6 +101,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description != null ? description : "";
     }
 
     public String getEncodedPassword() {

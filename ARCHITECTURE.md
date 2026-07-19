@@ -43,10 +43,12 @@ JWT `groups` claim = distinct role names from all active profiles of the user (`
 |--------|------|------|---------|
 | `POST` | `/auth/login` | Public | Email + password → JWT |
 | `GET` | `/auth/me` | JWT | Current user info |
+| `PUT` | `/auth/me` | JWT | Update own name, email, and public description |
 | `POST` | `/auth/change-password` | JWT | Change password |
 | `POST` | `/auth/request-reset-password` | Public | Email reset link |
 | `POST` | `/auth/reset` | Public | Confirm reset with token |
 | `GET` | `/directory/users` | JWT (any authenticated) | Privacy-limited active user directory for peer apps (`q`, `page`, `size`) |
+| `POST` | `/directory/authors` | JWT (any authenticated) | Batch public author lookup by ids (`id`, `username`, `name`, `description` — no email) |
 
 Public auth routes are rate-limited per client IP (`AuthRateLimitFilter`): default 30 requests/minute on login and password reset paths. Configure via `passport.auth.rate-limit.*`.
 
@@ -172,6 +174,7 @@ Feature endpoints use verb subpackages: `user/create/CreateUserEndpoint`, etc.
 |-----------|---------|
 | `passport.admin` | Manage users, profiles, roles (`RequiredRoles.ADMIN`) |
 | `domains.admin` | Granted via profile; used by Visita domain admin API |
+| `cursos.admin` | Granted via profile; used by Cursos category administration |
 | `Domain.Editor` | Visita domain editing (via profile) |
 | `Domain.Stats.Viewer` | Visita stats viewing (via profile) |
 

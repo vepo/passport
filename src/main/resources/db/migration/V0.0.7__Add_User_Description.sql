@@ -1,0 +1,2 @@
+ALTER TABLE tb_users
+    ADD COLUMN description VARCHAR(2000) NOT NULL DEFAULT '';

@@ -33,6 +33,7 @@ erDiagram
 | **Role** | Permission string consumed by downstream services (JWT `groups`). | `Role`, `tb_roles` |
 | **Passport administrator** | Role `passport.admin`; manage users, profiles, roles. | `RequiredRoles.ADMIN` |
 | **Domain administrator** | Role `domains.admin`; manage Visita domains (via profile). | JWT group |
+| **Cursos administrator** | Role `cursos.admin`; manage Cursos platform categories. | JWT group consumed by Cursos |
 | **Domain editor** | Role `Domain.Editor`; edit domain settings in Visita. | JWT group |
 | **Domain stats viewer** | Role `Domain.Stats.Viewer`; view Visita analytics. | JWT group |
 | **Disabled user** | User who cannot log in. | `User.disabled` |
@@ -45,6 +46,8 @@ erDiagram
 | **Login** | Authenticate with email and password; returns **JWT**. | `LoginEndpoint`, `POST /auth/login` |
 | **JWT** | Signed token with user id, username, email, role **groups**. | `JwtGenerator` |
 | **Current user** | Authenticated user from JWT. | `CurrentUserEndpoint`, `GET /auth/me` |
+| **Update own account** | Authenticated user changes own name, email, and public description. | `UpdateCurrentUserEndpoint`, `PUT /auth/me` |
+| **Author description** | Public biography text on a User (not a Profile/role bundle). | `User.description`; exposed via `/directory/authors` |
 | **Encoded password** | PBKDF2-hashed secret; never returned in API. | `PasswordEncoder`, `User.encodedPassword` |
 | **Change password** | Authenticated user sets a new password. | `ChangePasswordEndpoint` |
 | **Password reset request** | Email with link to reset password. | `RequestResetPasswordEndpoint` |
@@ -96,7 +99,7 @@ erDiagram
 
 | Username | Profiles | Typical use |
 |----------|----------|-------------|
-| `cto-boss` | Domain Manager, Domain Viewer, Passport Admin | Full admin + domain roles; follows Engage channel id `1` |
+| `cto-boss` | Domain Manager, Domain Viewer, Passport Admin, Cursos Admin | Full admin + domain/Cursos roles; follows Engage channel id `1` |
 | `junior` | (none) | User without elevated roles |
 | `guest-user` | (none) | Minimal account |
 
