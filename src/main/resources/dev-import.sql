@@ -46,6 +46,23 @@ BEGIN
                          ('junior', 'Junior Developer', 'junior_dev@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
                           'Desenvolvedor júnior e autor do curso Angular na prática.');
 
+    -- Extra Cursos students / second teacher (stable order after clean seed: ids 4–8)
+    INSERT INTO tb_users (username, name, email, encoded_password, description) VALUES
+                         ('alice', 'Alice Santos', 'alice@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
+                          'Estudante de backend; matriculada em Quarkus com progresso parcial.');
+    INSERT INTO tb_users (username, name, email, encoded_password, description) VALUES
+                         ('bob', 'Bob Oliveira', 'bob@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
+                          'Estudante que concluiu Introdução ao Quarkus (certificado).');
+    INSERT INTO tb_users (username, name, email, encoded_password, description) VALUES
+                         ('carol', 'Carol Mendes', 'carol@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
+                          'Estudante com solicitação de matrícula pendente.');
+    INSERT INTO tb_users (username, name, email, encoded_password, description) VALUES
+                         ('diego', 'Diego Costa', 'diego@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
+                          'Estudante com matrícula recusada (para testar REJECTED).');
+    INSERT INTO tb_users (username, name, email, encoded_password, description) VALUES
+                         ('mentor', 'Ana Mentora', 'mentor@passport.vepo.dev', 'IwS3Mm4oGEfpwPDC3Vom20ViYgXhVCxHeBGr8aluY9tC9o668ghxJ2fMQQUwq+7GWJkzX1HguXOtdwVkblUzTw==',
+                          'Mentora e autora do curso DevOps com containers.');
+
     INSERT INTO tb_users_profiles (user_id, profile_id) 
     VALUES ((SELECT id FROM tb_users WHERE username = 'cto-boss'),
             (SELECT id FROM tb_profiles WHERE name = 'Domain Manager')),
